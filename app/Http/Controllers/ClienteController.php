@@ -14,8 +14,8 @@ class ClienteController extends Controller
         return view('single-client', compact('cliente'));
     }
 
-    public static function getAllClients(Request $request)
-    {
-        return "Hola";
-    }
+//    public static function getAllClients(Request $request)
+//    {
+//        return "Hola";
+//    }
 }

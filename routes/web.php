@@ -17,5 +17,10 @@ Route::post('/logout', 'MainController@logout')->name('logout');
 // Route::get('/clientes', 'ClienteController@getAllClients');
 
 Route::group(['prefix'=>'usuarios'],function(){
-  Route::get('/', 'UsuarioController@index');
+    Route::get('/', 'UsuarioController@index');
+});
+
+Route::group(['prefix'=>'module'],function(){
+    Route::get('/', 'ModuleController@index');
+    Route::post('/get-main-list', 'ModuleController@GetMainList')->name('get-list');
 });
