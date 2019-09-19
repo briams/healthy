@@ -119,7 +119,7 @@
     });
 </script>
 @yield('scripts')
-<div class="ui active inverted dimmer app__loader">
+<div class="ui active inverted dimmer app__loader" style="display:none;">
     <div class="ui massive text loader">...</div>
 </div>
 
