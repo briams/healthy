@@ -9,9 +9,13 @@
 
     <link rel="stylesheet" type="text/css" href="{{ asset('semantic/dist/semantic.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('kendoui/styles/kendo.common-material.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('toast/jquery.toast.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/layout.css') }}">
+
+    {{--<link rel="stylesheet" type="text/css" href="{{ asset('dashboard/css/main.css?217e6ea996') }}">--}}
 
     <style>
-        #app_container_body {
+        #app__container_body {
             margin-left: 270px;
         }
     </style>
@@ -32,50 +36,36 @@
     <div class="ui sidebar vertical left menu overlay  borderless visible sidemenu inverted"
          style="-webkit-transition-duration: 0.1s; transition-duration: 0.1s; margin-top: 48px !important;"
          data-color="grey">
-
-        <a class="item logo">Veterinaria</a>
         <!-- MENU -->
         <div class="ui accordion inverted">
-            <!-- <div class="title item">
-              <a href="/#dashboard">
-              <i class="ion-speedometer titleIcon icon"></i> <span class="colhidden">DASHBOARD</span>
-              </a>
-            </div> -->
+            <div class="content">
+                <a class="item logo titleIcon" href="{{ url("/") }}"><i class="home icon"></i>Veterinaria</a>
+            </div>
         @foreach ($modulos as $modulo)
-            <!-- {% for modulo in modulosPadre %} -->
             @if (count($modulo->hijos) > 0)
-                <!-- {% if modulo.mod_is_parent == 1 %} -->
-                    <!-- menu con dropdown-->
-                    <div class="title item logo">
+                <!-- menu con dropdown-->
+                    <div class="title item logo ui left icon">
                         <i class="{{$modulo->icono}} titleIcon icon"></i>
                         <i class="dropdown icon"></i> {{$modulo->nombre}}
                     </div>
                     <div class="content">
-                        <!-- {% for modh in modulo.hijos %} -->
                         @foreach ($modulo->hijos as $hijo)
                             <a class="item app_nav__module_item" href="{{ url($hijo->url) }}">{{$hijo->nombre}}</a>
-                            <!-- {% endfor %} -->
                         @endforeach
                     </div>
             @else
-                <!-- {% else %} -->
-                    <!-- menu sin dropdown-->
-
-
+                <!-- menu sin dropdown-->
                     <div class="title item">
-                        <a href=" /{{$modulo->url}}">
-                            <i class="{{$modulo->icono}} titleIcon icon"></i> <span
-                                    class="colhidden">{{ $modulo->nombre }}</span>
+                        <a href=" /{{ url($modulo->url) }}">
+                            <i class="{{$modulo->icono}} titleIcon icon"></i>
+                            <span class="colhidden">{{ $modulo->nombre }}</span>
                         </a>
                     </div>
-            @endif
-            <!-- {%endif%} -->
-                <!-- {%endfor%} -->
+                @endif
             @endforeach
         </div>
     </div>
-    <div class="pusher" id="app_container_body">
-        {{--<div class=""--}}
+    <div class="pusher" id="app__container_body">
         @yield('content')
     </div>
 </div>
@@ -83,6 +73,7 @@
 <script src="{{ URL::asset('js/jquery.js') }}" charset="utf-8"></script>
 <script src="{{ asset('semantic/dist/semantic.min.js') }}"></script>
 <script src="{{ asset('kendoui/js/kendo.all.min.js') }}"></script>
+<script src="{{ asset('toast/jquery.toast.min.js') }}"></script>
 
 <!-- application -->
 <script src="{{ URL::asset('js/app.js') }}" charset="utf-8"></script>
@@ -106,7 +97,7 @@
                     console.log(response)
                     if (response.status == STATUS_OK) {
                         // window.location.reload();
-                            window.location.href = "{{ url('/') }}";
+                        window.location.href = "{{ url('/') }}";
                     }
                 },
                 statusCode: {

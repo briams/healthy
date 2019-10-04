@@ -16,21 +16,18 @@ class MenuComposer
 //            ->where(TABLE_PRIVILEGIOS.'.privi__perfil_id','=',$perfilId)
             ->where('estado','=',1)
             ->where('is_parent','=',1)
+            ->orderBy('orden', 'asc')
             ->get();
 
-//        $menu = new stdClass();
 
         foreach($itemsPadres as $padre)
         {
-            $hijos =  DB::table('tbl_module')->where('padre_id', $padre->idModule)->get();
-//            $menu = $padre;
+            $hijos =  DB::table('tbl_module')
+                ->where('padre_id', $padre->idModule)
+                ->orderBy('orden', 'asc')
+                ->get();
             $padre->hijos = $hijos;
-//            $menu[] = [
-//                'padre'=>$padre,
-//                'hijos'=>$hijos
-//            ];
         }
-//        dd($itemsPadres);
         $view->with('modulos',$itemsPadres);
     }
 }

@@ -1,0 +1,17 @@
+/** KENDOUI **/
+
+.k-grid-content .grid__cell_tool_menu{
+    /*padding-left:5px;*/
+    overflow:visible;
+}
+
+.k-grid td{
+    line-height:1.3em;
+}
+
+.k-loading-mask{
+    display:none!important;
+}
+
+
+/** KENDOUI **/

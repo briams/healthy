@@ -39,7 +39,7 @@ class MainController extends Controller
       return response()->json(['status'=>STATUS_FAIL,'error'=>1,'msg'=>'Usuario no activo']);
     }
 
-    // if($rsUser->password == bcrypt($pass)){
+//     if($rsUser->password == bcrypt($pass)){
     if($rsUser->password == $pass){
       Session::put('usuario',$rsUser);
       return response()->json(['status'=>STATUS_OK]);

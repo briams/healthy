@@ -4,14 +4,14 @@
     <div class="navslide navwrap" id="app_content_toolbar">
         <div class="ui menu icon borderless grid" data-color="inverted white">
             <div class="item ui colhidden">
-                <button id="new_module" class="ui button compact"><i class="icon plus"></i>Nuevo Modulo
+                <button id="new_raza" class="ui button compact"><i class="icon plus"></i>Nueva Raza
                 </button>
             </div>
-            <div class="item right ui colhidden">
-                <div class="ui input inline">
-                    <input type="text" placeholder="Buscar..." id="search">
-                </div>
-            </div>
+            {{--<div class="item right ui colhidden">--}}
+                {{--<div class="ui input inline">--}}
+                    {{--<input type="text" placeholder="Buscar..." id="search">--}}
+                {{--</div>--}}
+            {{--</div>--}}
         </div>
     </div>
 
@@ -27,10 +27,10 @@
         var mainDataSource = new kendo.data.DataSource({
             transport: {
                 read: function (options) {
-                    options.data.q = function () {
-                        return $("#search_cliente").val();
-                    };
-                    dataSourceBinding(options, "{{ url('module/get-main-list') }}")
+                    // options.data.q = function () {
+                    //     return $("#search_cliente").val();
+                    // };
+                    dataSourceBinding(options, "{{ url('raza/get-main-list') }}")
                 }
             },
             serverFiltering: true,
@@ -43,7 +43,7 @@
                 total: 'count',
                 model: {
 
-                    id: "mod_id"
+                    id: "idRaza"
                 }
             }
         });
@@ -67,10 +67,8 @@
                     attributes: {"class": "grid__cell_tool_menu"}
                 },
 
-                {field: "&nbsp;", title: 'ESTADO', width: "80px", template: "#= estado #"},
-                {field: "nombre", title: 'NOMBRE', width: '120px'},
-                {field: "url", title: 'URL', width: '120px'},
-                {field: "orden", title: 'ORDEN', width: '60px'},
+                {field: "raza_nombre", title: 'NOMBRE', width: '80px'},
+                {field: "especie_nombre", title: 'ESPECIE', width: '120px'},
 
             ],
 
@@ -83,45 +81,22 @@
 
                 $('.ajxEdit').click(function(e){
                     e.preventDefault();
-                    var id = $(this).attr('data-idMod');
-                    window.location.href="{{ url('module/editar') }}/"+id;
+                    var id = $(this).attr('data-idRaza');
+                    window.location.href="{{ url('raza/editar') }}/"+id;
                 });
 
-                $('.ajxDown').click(function(e){
+                $('.ajxDelete').click(function(e){
                     e.preventDefault();
-                    var id = $(this).attr('data-idMod');
+                    var id = $(this).attr('data-idRaza');
                     $.ajax({
-                        url : "{{ action('ModuleController@bloquear') }}",
+                        url : "{{ action('RazaController@eliminar') }}",
                         data : { id : id },
                         type : 'POST',
                         success : function(response){
                             if (response.status == STATUS_FAIL) {
                                 toast('error', 1500, data.msg );
                             }else if (response.status == STATUS_OK) {
-                                toast('success',3000,'Modulo Bloqueado');
-                                mainDataSource.read();
-                            }
-                        },
-                        statusCode : {
-                            404 : function(){
-                                alert('Web not found');
-                            }
-                        }
-                    });
-                });
-
-                $('.ajxUp').click(function(e){
-                    e.preventDefault();
-                    var id = $(this).attr('data-idMod');
-                    $.ajax({
-                        url : "{{ action('ModuleController@activar') }}",
-                        data : { id : id },
-                        type : 'POST',
-                        success : function(response){
-                            if (response.status == STATUS_FAIL) {
-                                toast('error', 1500, data.msg );
-                            }else if (response.status == STATUS_OK) {
-                                toast('success',3000,'Modulo Activado');
+                                toast('success',3000,'Raza Eliminada');
                                 mainDataSource.read();
                             }
                         },
@@ -141,8 +116,8 @@
         $(document).ready(function () {
             mainDataSource.read();
 
-            $('#new_module').click(function (e) {
-                window.location.href = "{{ url('module/editar') }}";
+            $('#new_raza').click(function (e) {
+                window.location.href = "{{ url('raza/editar') }}";
             });
 
             // $("#search_cliente").keyup(function(e){
