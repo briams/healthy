@@ -74,3 +74,52 @@ Route::group(['prefix'=>'tipo-documento'],function(){
     Route::post('/save','TipoDocumentoController@save');
     Route::post('/eliminar','TipoDocumentoController@eliminar');
 });
+
+Route::group(['prefix'=>'unidad-medida'],function(){
+    Route::get('/', 'UnidadMedidaController@index');
+    Route::post('/get-main-list', 'UnidadMedidaController@GetMainList');
+    Route::get('/editar/{idUnidMedida?}','UnidadMedidaController@edit');
+    Route::post('/save','UnidadMedidaController@save');
+    Route::post('/eliminar','UnidadMedidaController@eliminar');
+});
+
+Route::group(['prefix'=>'vacuna'],function(){
+    Route::get('/', 'VacunaController@index');
+    Route::post('/get-main-list', 'VacunaController@GetMainList');
+    Route::get('/editar/{idVacuna?}','VacunaController@edit');
+    Route::post('/save','VacunaController@save');
+    Route::post('/bloquear','VacunaController@bloquear');
+    Route::post('/activar','VacunaController@activar');
+    Route::post('/eliminar','VacunaController@eliminar');
+});
+
+Route::group(['prefix'=>'producto'],function(){
+    Route::get('/', 'ProductoController@index');
+    Route::post('/get-main-list', 'ProductoController@GetMainList');
+    Route::get('/editar/{idProducto?}','ProductoController@edit');
+    Route::post('/save','ProductoController@save');
+    Route::post('/bloquear','ProductoController@bloquear');
+    Route::post('/activar','ProductoController@activar');
+    Route::post('/eliminar','ProductoController@eliminar');
+});
+
+Route::group(['prefix'=>'cliente'],function(){
+    Route::get('/', 'ClienteController@index');
+    Route::post('/get-main-list', 'ClienteController@GetMainList');
+    Route::get('/editar/{idCliente?}','ClienteController@edit');
+    Route::post('/save','ClienteController@save');
+    Route::post('/bloquear','ClienteController@bloquear');
+    Route::post('/activar','ClienteController@activar');
+    Route::post('/eliminar','ClienteController@eliminar');
+    Route::post('/buscar-documento','ClienteController@searchDoc');
+});
+
+Route::group(['prefix'=>'mascota'],function(){
+    Route::get('/', 'MascotaController@index');
+    Route::post('/get-main-list', 'MascotaController@GetMainList');
+    Route::get('/editar/{idMascota?}','MascotaController@edit');
+    Route::post('/save','MascotaController@save');
+    Route::post('/bloquear','MascotaController@bloquear');
+    Route::post('/activar','MascotaController@activar');
+    Route::post('/eliminar','MascotaController@eliminar');
+});

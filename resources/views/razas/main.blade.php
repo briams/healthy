@@ -8,9 +8,9 @@
                 </button>
             </div>
             {{--<div class="item right ui colhidden">--}}
-                {{--<div class="ui input inline">--}}
-                    {{--<input type="text" placeholder="Buscar..." id="search">--}}
-                {{--</div>--}}
+            {{--<div class="ui input inline">--}}
+            {{--<input type="text" placeholder="Buscar..." id="search">--}}
+            {{--</div>--}}
             {{--</div>--}}
         </div>
     </div>
@@ -79,29 +79,29 @@
                     context: '.k-grid-content'
                 });
 
-                $('.ajxEdit').click(function(e){
+                $('.ajxEdit').click(function (e) {
                     e.preventDefault();
                     var id = $(this).attr('data-idRaza');
-                    window.location.href="{{ url('raza/editar') }}/"+id;
+                    window.location.href = "{{ url('raza/editar') }}/" + id;
                 });
 
-                $('.ajxDelete').click(function(e){
+                $('.ajxDelete').click(function (e) {
                     e.preventDefault();
                     var id = $(this).attr('data-idRaza');
                     $.ajax({
-                        url : "{{ action('RazaController@eliminar') }}",
-                        data : { id : id },
-                        type : 'POST',
-                        success : function(response){
+                        url: "{{ action('RazaController@eliminar') }}",
+                        data: {id: id},
+                        type: 'POST',
+                        success: function (response) {
                             if (response.status == STATUS_FAIL) {
-                                toast('error', 1500, data.msg );
-                            }else if (response.status == STATUS_OK) {
-                                toast('success',3000,'Raza Eliminada');
+                                toast('error', 1500, data.msg);
+                            } else if (response.status == STATUS_OK) {
+                                toast('success', 3000, 'Raza Eliminada');
                                 mainDataSource.read();
                             }
                         },
-                        statusCode : {
-                            404 : function(){
+                        statusCode: {
+                            404: function () {
                                 alert('Web not found');
                             }
                         }

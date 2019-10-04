@@ -17,12 +17,12 @@ class TipoDocumentoController extends Controller
         $take = $request->input('take');
         $skip = $request->input('skip');
 
-        $select = DB::table('tbl_especie');
+        $select = DB::table('tbl_tipo_documento');
 
         $countSelect = clone $select;
         $rsCount = $countSelect->get();
         $countRegs = count($rsCount);
-        $select->orderBy('especie_id', 'desc')
+        $select->orderBy('tdc_id', 'desc')
             ->limit($take)
             ->offset($skip);
         $rows = $select->get();
@@ -34,14 +34,14 @@ class TipoDocumentoController extends Controller
                         <div class="menu">';
 
             $tool .= '
-		                <div class="item ajxEdit" data-idEsp="' . $row->especie_id . '">
+		                <div class="item ajxEdit" data-idTipDoc="' . $row->tdc_id . '">
                         <i class="blue edit icon"></i>
 		                Modificar
 		                </div>';
 
             $tool .= '
 		                <div class="ui divider"></div>
-		                <div class="item ajxDelete" data-idEsp="' . $row->especie_id . '">
+		                <div class="item ajxDelete" data-idTipDoc="' . $row->tdc_id . '">
                         <i class="black trash alternate icon"></i>
 		                Eliminar
 		                </div>';
@@ -54,21 +54,21 @@ class TipoDocumentoController extends Controller
         return response()->json(['status' => STATUS_OK, 'data' => ['data' => $rows, 'count' => $countRegs]]);
     }
 
-    public function edit($idEspecie = '')
+    public function edit($idTipDoc = '')
     {
-        $especie = DB::table('tbl_especie')
-            ->where('especie_id', '=', $idEspecie)
+        $tipDocumento = DB::table('tbl_tipo_documento')
+            ->where('tdc_id', '=', $idTipDoc)
             ->first();
 
-        if ($idEspecie == '') {
-            return view('especies.especie');
+        if ($idTipDoc == '') {
+            return view('tipodoc.tipodoc');
         } else {
-            if ($especie) {
-                return view('especies.especie', [
-                    'especie' => $especie,
+            if ($tipDocumento) {
+                return view('tipodoc.tipodoc', [
+                    'tipDocumento' => $tipDocumento,
                 ]);
             } else {
-                return redirect()->action('EspecieController@index');
+                return redirect()->action('TipoDocumentoController@index');
             }
         }
 
@@ -77,8 +77,16 @@ class TipoDocumentoController extends Controller
     public function save(Request $request)
     {
         $error = [];
-        if ($request->input('especie_nombre') == '') {
-            $error['especie_nombre'] = "Debe ingresar nombre de la especie";
+        if ($request->input('tdc_codigo') == '') {
+            $error['tdc_codigo'] = "Debe ingresar codigo del documento";
+        }
+
+        if ($request->input('tdc_descripcion') == '') {
+            $error['tdc_descripcion'] = "Debe ingresar descripcion del documento";
+        }
+
+        if ($request->input('tdc_sigla') == '') {
+            $error['tdc_sigla'] = "Debe ingresar sigla del documento";
         }
 
         if (count($error) > 0) {
@@ -87,17 +95,20 @@ class TipoDocumentoController extends Controller
         }
 
         $dataInsert = [
-            'especie_nombre'    => $request->input('especie_nombre'),
+            'tdc_codigo'    => $request->input('tdc_codigo'),
+            'tdc_descripcion'    => $request->input('tdc_descripcion'),
+            'tdc_orden'    => $request->input('tdc_orden'),
+            'tdc_sigla'    => $request->input('tdc_sigla'),
         ];
 
-        if ($request->input('especie_id') == '') {
-            $id = DB::table('tbl_especie')
+        if ($request->input('tdc_id') == '') {
+            $id = DB::table('tbl_tipo_documento')
                 ->insertGetId($dataInsert);
         }else{
-            DB::table('tbl_especie')
-                ->where('especie_id', $request->input('especie_id'))
+            DB::table('tbl_tipo_documento')
+                ->where('tdc_id', $request->input('tdc_id'))
                 ->update($dataInsert);
-            $id = $request->input('especie_id');
+            $id = $request->input('tdc_id');
         }
 
         $result = ['status'=>STATUS_OK,'id'=>$id];
@@ -110,8 +121,8 @@ class TipoDocumentoController extends Controller
             $res = ['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada'];
             return response()->json($res);
         }
-        DB::table('tbl_especie')
-            ->where('especie_id', $request->input('id'))
+        DB::table('tbl_tipo_documento')
+            ->where('tdc_id', $request->input('id'))
             ->delete();
 
         return response()->json(['status'=>STATUS_OK]);

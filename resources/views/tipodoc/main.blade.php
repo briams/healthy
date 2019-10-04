@@ -4,7 +4,7 @@
     <div class="navslide navwrap" id="app_content_toolbar">
         <div class="ui menu icon borderless grid" data-color="inverted white">
             <div class="item ui colhidden">
-                <button id="new_perfil" class="ui button compact"><i class="icon plus"></i>Nuevo Perfil
+                <button id="new_tipodoc" class="ui button compact"><i class="icon plus"></i>Nuevo Tipo Documento
                 </button>
             </div>
             {{--<div class="item right ui colhidden">--}}
@@ -30,7 +30,7 @@
                     // options.data.q = function () {
                         // return $("#search_cliente").val();
                     // };
-                    dataSourceBinding(options, "{{ url('perfil/get-main-list') }}")
+                    dataSourceBinding(options, "{{ url('tipo-documento/get-main-list') }}")
                 }
             },
             serverFiltering: true,
@@ -43,7 +43,7 @@
                 total: 'count',
                 model: {
 
-                    id: "perfil_id"
+                    id: "tdc_id"
                 }
             }
         });
@@ -67,8 +67,10 @@
                     attributes: {"class": "grid__cell_tool_menu"}
                 },
 
-                {field: "&nbsp;", title: 'ESTADO', width: "60px", template: "#= estado #"},
-                {field: "perfil_nombre", title: 'NOMBRE', width: '80px'},
+                {field: "tdc_codigo", title: 'CODIGO', width: '80px'},
+                {field: "tdc_descripcion", title: 'DESCRIPCION', width: '80px'},
+                {field: "tdc_sigla", title: 'SIGLA', width: '80px'},
+                {field: "tdc_orden", title: 'ORDEN', width: '80px'},
 
             ],
 
@@ -81,68 +83,22 @@
 
                 $('.ajxEdit').click(function(e){
                     e.preventDefault();
-                    var id = $(this).attr('data-idPer');
-                    window.location.href="{{ url('perfil/editar') }}/"+id;
-                });
-
-                $('.ajxDown').click(function(e){
-                    e.preventDefault();
-                    var id = $(this).attr('data-idPer');
-                    $.ajax({
-                        url : "{{ action('PerfilController@bloquear') }}",
-                        data : { id : id },
-                        type : 'POST',
-                        success : function(response){
-                            if (response.status == STATUS_FAIL) {
-                                toast('error', 1500, data.msg );
-                            }else if (response.status == STATUS_OK) {
-                                toast('success',3000,'Perfil Bloqueado');
-                                mainDataSource.read();
-                            }
-                        },
-                        statusCode : {
-                            404 : function(){
-                                alert('Web not found');
-                            }
-                        }
-                    });
-                });
-
-                $('.ajxUp').click(function(e){
-                    e.preventDefault();
-                    var id = $(this).attr('data-idPer');
-                    $.ajax({
-                        url : "{{ action('PerfilController@activar') }}",
-                        data : { id : id },
-                        type : 'POST',
-                        success : function(response){
-                            if (response.status == STATUS_FAIL) {
-                                toast('error', 1500, data.msg );
-                            }else if (response.status == STATUS_OK) {
-                                toast('success',3000,'Perfil Activado');
-                                mainDataSource.read();
-                            }
-                        },
-                        statusCode : {
-                            404 : function(){
-                                alert('Web not found');
-                            }
-                        }
-                    });
+                    var id = $(this).attr('data-idTipDoc');
+                    window.location.href="{{ url('tipo-documento/editar') }}/"+id;
                 });
 
                 $('.ajxDelete').click(function(e){
                     e.preventDefault();
-                    var id = $(this).attr('data-idPer');
+                    var id = $(this).attr('data-idTipDoc');
                     $.ajax({
-                        url : "{{ action('PerfilController@eliminar') }}",
+                        url : "{{ action('TipoDocumentoController@eliminar') }}",
                         data : { id : id },
                         type : 'POST',
                         success : function(response){
                             if (response.status == STATUS_FAIL) {
                                 toast('error', 1500, data.msg );
                             }else if (response.status == STATUS_OK) {
-                                toast('success',3000,'Perfil Eliminado');
+                                toast('success',3000,'Tipo Documento Eliminado');
                                 mainDataSource.read();
                             }
                         },
@@ -162,8 +118,8 @@
         $(document).ready(function () {
             mainDataSource.read();
 
-            $('#new_perfil').click(function (e) {
-                window.location.href = "{{ url('perfil/editar') }}";
+            $('#new_tipodoc').click(function (e) {
+                window.location.href = "{{ url('tipo-documento/editar') }}";
             });
 
             // $("#search_cliente").keyup(function(e){

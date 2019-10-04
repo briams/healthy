@@ -9,6 +9,7 @@
 
     <link rel="stylesheet" type="text/css" href="{{ asset('semantic/dist/semantic.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('kendoui/styles/kendo.common-material.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('flatpickr/flatpickr.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('toast/jquery.toast.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/layout.css') }}">
 
@@ -73,6 +74,7 @@
 <script src="{{ URL::asset('js/jquery.js') }}" charset="utf-8"></script>
 <script src="{{ asset('semantic/dist/semantic.min.js') }}"></script>
 <script src="{{ asset('kendoui/js/kendo.all.min.js') }}"></script>
+<script src="{{ asset('flatpickr/flatpickr.min.js') }}"></script>
 <script src="{{ asset('toast/jquery.toast.min.js') }}"></script>
 
 <!-- application -->
