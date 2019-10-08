@@ -37,7 +37,7 @@
             serverSorting: true,
             serverPaging: true,
             autoSync: true,
-            pageSize: 20,
+            pageSize: 10,
             schema: {
                 data: 'data',
                 total: 'count',

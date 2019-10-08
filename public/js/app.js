@@ -37,17 +37,15 @@ function unfreeze() {
     $('.app__loader').hide();
 }
 
-function toast(action, tiempo,mensaje)
-{
+function toast(action, tiempo, mensaje) {
     var bgcolor;
 
-    if(action=='error')
-    {
-        bgcolor='#db2828';
+    if (action == 'error') {
+        bgcolor = '#db2828';
 
-    }else if(action=='success'){
+    } else if (action == 'success') {
 
-        bgcolor='#66BB6A';
+        bgcolor = '#66BB6A';
     }
 
     $.toast({
