@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Especie;
+use App\Raza;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class RazaController extends Controller
 {
@@ -17,16 +20,8 @@ class RazaController extends Controller
         $take = $request->input('take');
         $skip = $request->input('skip');
 
-        $select = DB::table('tbl_raza')
-            ->leftJoin('tbl_especie', 'tbl_raza.raza_especie_id', '=', 'tbl_especie.especie_id');
-
-        $countSelect = clone $select;
-        $rsCount = $countSelect->get();
-        $countRegs = count($rsCount);
-        $select->orderBy('raza_id', 'desc')
-            ->limit($take)
-            ->offset($skip);
-        $rows = $select->get();
+        $countRegs = Raza::getCountRaza();
+        $rows = Raza::getList($take, $skip);
 
         foreach ($rows as $row) {
             $tool = '
@@ -57,39 +52,32 @@ class RazaController extends Controller
 
     public function edit($idRaza = '')
     {
-        $raza = DB::table('tbl_raza')
-            ->where('raza_id', '=', $idRaza)
-            ->first();
-
-        $especies = DB::table('tbl_especie')
-            ->get();
-
+        $especies = Especie::getAllList();
         if ($idRaza == '') {
             return view('razas.raza', [
                 'especies' => $especies,
             ]);
-        } else {
-            if ($raza) {
-                return view('razas.raza', [
-                    'raza' => $raza,
-                    'especies' => $especies,
-                ]);
-            } else {
-                return redirect()->action('RazaController@index');
-            }
         }
 
+        $raza = Raza::getRaza($idRaza);
+        if (!$raza) {
+            return redirect()->action('RazaController@index');
+        }
+        return view('razas.raza', [
+            'raza' => $raza,
+            'especies' => $especies,
+        ]);
     }
 
     public function save(Request $request)
     {
         $error = [];
-        if ($request->input('raza_nombre') == '') {
-            $error['raza_nombre'] = "Debe ingresar nombre de la raza";
-        }
-
-        if ($request->input('raza_especie_id') == '') {
-            $error['raza_especie_id'] = "Seleccione la especie a la q pertenece";
+        $validator = Validator::make($request->all(), [
+            'raza_nombre' => 'required',
+            'raza_especie_id' => 'required',
+        ]);
+        foreach ($validator->errors()->getMessages() as $key => $message) {
+            $error[$key] = $message[0];
         }
 
         if (count($error) > 0) {
@@ -97,35 +85,20 @@ class RazaController extends Controller
             return response()->json($res);
         }
 
-        $dataInsert = [
-            'raza_nombre'    => $request->input('raza_nombre'),
-            'raza_especie_id'       => $request->input('raza_especie_id'),
-        ];
-
-        if ($request->input('raza_id') == '') {
-            $id = DB::table('tbl_raza')
-                ->insertGetId($dataInsert);
-        }else{
-            DB::table('tbl_raza')
-                ->where('raza_id', $request->input('raza_id'))
-                ->update($dataInsert);
-            $id = $request->input('raza_id');
+        if (!$request->filled('raza_id')) {
+            $raza = Raza::create($request->all());
+            return response()->json(['status' => STATUS_OK, 'id' => $raza->raza_id]);
         }
-
-        $result = ['status'=>STATUS_OK,'id'=>$id];
-
-        return response()->json($result);
+        $raza = Raza::updateRow($request);
+        return response()->json(['status' => STATUS_OK, 'id' => $raza->raza_id]);
     }
 
-    public function eliminar(Request $request){
-        if ($request->input('id') == '') {
-            $res = ['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada'];
-            return response()->json($res);
+    public function eliminar(Request $request)
+    {
+        if (!$request->filled('id')) {
+            return response()->json(['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada']);
         }
-        DB::table('tbl_raza')
-            ->where('raza_id', $request->input('id'))
-            ->delete();
-
-        return response()->json(['status'=>STATUS_OK]);
+        Raza::deleteRaza($request->input('id'));
+        return response()->json(['status' => STATUS_OK]);
     }
 }

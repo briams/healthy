@@ -47,7 +47,7 @@
                                             <div class="fields">
                                                 <div class="eight wide field pro_unidad_medida" >
                                                     @if (count($UnidadMedidas) > 0)
-                                                        <label>Modulo Padre</label>
+                                                        <label>Unidad Medida</label>
                                                         <select class="ui search dropdown" id="pro_unidad_medida" name="pro_unidad_medida">
                                                             <option value="">Seleccione Unidad Medida</option>
                                                             @foreach ($UnidadMedidas as $unidad)

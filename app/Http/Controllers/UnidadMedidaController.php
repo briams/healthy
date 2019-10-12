@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\UnidadMedida;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class UnidadMedidaController extends Controller
 {
@@ -17,15 +19,8 @@ class UnidadMedidaController extends Controller
         $take = $request->input('take');
         $skip = $request->input('skip');
 
-        $select = DB::table('tbl_unidad_medida');
-
-        $countSelect = clone $select;
-        $rsCount = $countSelect->get();
-        $countRegs = count($rsCount);
-        $select->orderBy('umd_id', 'desc')
-            ->limit($take)
-            ->offset($skip);
-        $rows = $select->get();
+        $countRegs = UnidadMedida::getCountUnidMedida();
+        $rows = UnidadMedida::getList($take, $skip);
 
         foreach ($rows as $row) {
             $tool = '
@@ -56,33 +51,28 @@ class UnidadMedidaController extends Controller
 
     public function edit($idUnidMedida = '')
     {
-        $unidadMedida = DB::table('tbl_unidad_medida')
-            ->where('umd_id', '=', $idUnidMedida)
-            ->first();
-
         if ($idUnidMedida == '') {
             return view('unidmedida.unidmedida');
-        } else {
-            if ($unidadMedida) {
-                return view('unidmedida.unidmedida', [
-                    'unidadMedida' => $unidadMedida,
-                ]);
-            } else {
-                return redirect()->action('UnidadMedidaController@index');
-            }
         }
 
+        $unidadMedida = UnidadMedida::getUnidMedida($idUnidMedida);
+        if (!$unidadMedida) {
+            return redirect()->action('UnidadMedidaController@index');
+        }
+        return view('unidmedida.unidmedida', [
+            'unidadMedida' => $unidadMedida,
+        ]);
     }
 
     public function save(Request $request)
     {
         $error = [];
-        if ($request->input('umd_codigo') == '') {
-            $error['umd_codigo'] = "Debe ingresar codigo de la unidad de medida";
-        }
-
-        if ($request->input('umd_descripcion') == '') {
-            $error['umd_descripcion'] = "Debe ingresar descripcion de la unidad de medida";
+        $validator = Validator::make($request->all(), [
+            'umd_codigo' => 'required',
+            'umd_descripcion' => 'required',
+        ]);
+        foreach ($validator->errors()->getMessages() as $key => $message) {
+            $error[$key] = $message[0];
         }
 
         if (count($error) > 0) {
@@ -90,36 +80,20 @@ class UnidadMedidaController extends Controller
             return response()->json($res);
         }
 
-        $dataInsert = [
-            'umd_codigo'    => $request->input('umd_codigo'),
-            'umd_descripcion'    => $request->input('umd_descripcion'),
-            'umd_orden'    => $request->input('umd_orden'),
-        ];
-
-        if ($request->input('umd_id') == '') {
-            $id = DB::table('tbl_unidad_medida')
-                ->insertGetId($dataInsert);
-        }else{
-            DB::table('tbl_unidad_medida')
-                ->where('umd_id', $request->input('umd_id'))
-                ->update($dataInsert);
-            $id = $request->input('umd_id');
+        if (!$request->filled('umd_id')) {
+            $unidMedida = UnidadMedida::create($request->all());
+            return response()->json(['status' => STATUS_OK, 'id' => $unidMedida->umd_id]);
         }
-
-        $result = ['status'=>STATUS_OK,'id'=>$id];
-
-        return response()->json($result);
+        $unidMedida = UnidadMedida::updateRow($request);
+        return response()->json(['status' => STATUS_OK, 'id' => $unidMedida->umd_id]);
     }
 
-    public function eliminar(Request $request){
-        if ($request->input('id') == '') {
-            $res = ['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada'];
-            return response()->json($res);
+    public function eliminar(Request $request)
+    {
+        if (!$request->filled('id')) {
+            return response()->json(['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada']);
         }
-        DB::table('tbl_unidad_medida')
-            ->where('umd_id', $request->input('id'))
-            ->delete();
-
-        return response()->json(['status'=>STATUS_OK]);
+        UnidadMedida::deleteUnidMedida($request->input('id'));
+        return response()->json(['status' => STATUS_OK]);
     }
 }

@@ -89,6 +89,12 @@
                     window.location.href="{{ url('mascota/editar') }}/"+id;
                 });
 
+                $('.ajxHistoria').click(function(e){
+                    e.preventDefault();
+                    var id = $(this).attr('data-idMasc');
+                    window.location.href="{{ url('mascota/historia') }}/"+id;
+                });
+
                 $('.ajxDown').click(function(e){
                     e.preventDefault();
                     var id = $(this).attr('data-idMasc');

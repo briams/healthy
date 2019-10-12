@@ -162,9 +162,19 @@
                 dateFormat:'d/m/Y'
             });
 
-            // $("#mascota_especie").change(function(e){
-            //     e.preventDefault();
-            // });
+            var especie = $("#mascota_especie").val();
+
+            if(especie != ''){
+                accion = 2;//
+                cargarRaza(accion);
+            }
+
+            $("#mascota_especie").change(function(e){
+                e.preventDefault();
+                $('#mascota_raza').dropdown('clear');
+                accion = 1;
+                cargarRaza(accion);
+            });
 
             $('#mascota_save').click(function (e) {
                 e.preventDefault();
@@ -211,6 +221,14 @@
             });
 
         });
+
+        function cargarRaza(accion){
+            var idMascota = $('#mascota_id').val();
+            var idEspecie = $('#mascota_especie').val();
+            $.post("{{ action('MascotaController@cargarRaza') }}", { idMascota: idMascota, idEspecie: idEspecie, accion: accion } , function(data) {
+                $('#mascota_raza').html(data.raza);
+            });
+        }
 
     </script>
 @stop

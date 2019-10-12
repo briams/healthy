@@ -2,32 +2,43 @@
 
 namespace App\Http\ViewComposers;
 
+use App\Modulo;
+use App\Privilegio;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Session;
 
 class MenuComposer
 {
     public function compose(View $view)
     {
-//        $perfilId = auth()->user()->usu_perfil_adm;
+//        $itemsPadres = Modulo::getListModuleParent();
+//        foreach($itemsPadres as $padre)
+//        {
+//            $hijos =  Modulo::getListModuleChildren($padre->idModule);
+//            $padre->hijos = $hijos;
+//        }
+//        $view->with('modulos',$itemsPadres);
 
-        $itemsPadres = DB::table('tbl_module')
-//            ->join(TABLE_PRIVILEGIOS,TABLE_MENU.'.menu_id','=',TABLE_PRIVILEGIOS.'.privi__menu_id')
-//            ->where(TABLE_PRIVILEGIOS.'.privi__perfil_id','=',$perfilId)
-            ->where('estado','=',1)
-            ->where('is_parent','=',1)
-            ->orderBy('orden', 'asc')
-            ->get();
+        $perfilId = Session::get('usuario')['usuario_perfil_id'];
+        $modulesPadres = Modulo::getListModuleParent();
 
-
-        foreach($itemsPadres as $padre)
-        {
-            $hijos =  DB::table('tbl_module')
-                ->where('padre_id', $padre->idModule)
-                ->orderBy('orden', 'asc')
-                ->get();
-            $padre->hijos = $hijos;
+        $itemsPadres = [];
+        foreach ($modulesPadres as $padre) {
+            $privilegio = Privilegio::getPrivilegio($perfilId, $padre->idModule);
+            if ($privilegio) {
+                $hijos = Modulo::getListModuleChildren($padre->idModule);
+                $ModuloHijos = [];
+                foreach ($hijos as $hijo) {
+                    $privilegio = Privilegio::getPrivilegio($perfilId, $hijo->idModule);
+                    if ($privilegio) {
+                        $ModuloHijos[] = $hijo;
+                    }
+                }
+                $padre->hijos = $ModuloHijos;
+                $itemsPadres[] = $padre;
+            }
         }
-        $view->with('modulos',$itemsPadres);
+        $view->with('modulos', $itemsPadres);
     }
 }

@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Sexo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class SexoController extends Controller
 {
@@ -17,15 +19,8 @@ class SexoController extends Controller
         $take = $request->input('take');
         $skip = $request->input('skip');
 
-        $select = DB::table('tbl_sexo');
-
-        $countSelect = clone $select;
-        $rsCount = $countSelect->get();
-        $countRegs = count($rsCount);
-        $select->orderBy('sexo_id', 'desc')
-            ->limit($take)
-            ->offset($skip);
-        $rows = $select->get();
+        $countRegs = Sexo::getCountSexo();
+        $rows = Sexo::getList($take, $skip);
 
         foreach ($rows as $row) {
             $tool = '
@@ -56,29 +51,27 @@ class SexoController extends Controller
 
     public function edit($idSexo = '')
     {
-        $sexo = DB::table('tbl_sexo')
-            ->where('sexo_id', '=', $idSexo)
-            ->first();
-
         if ($idSexo == '') {
             return view('sexos.sexo');
-        } else {
-            if ($sexo) {
-                return view('sexos.sexo', [
-                    'sexo' => $sexo,
-                ]);
-            } else {
-                return redirect()->action('SexoController@index');
-            }
         }
 
+        $sexo = Sexo::getSexo($idSexo);
+        if (!$sexo) {
+            return redirect()->action('SexoController@index');
+        }
+        return view('sexos.sexo', [
+            'sexo' => $sexo,
+        ]);
     }
 
     public function save(Request $request)
     {
         $error = [];
-        if ($request->input('sexo_nombre') == '') {
-            $error['sexo_nombre'] = "Debe ingresar nombre del sexo";
+        $validator = Validator::make($request->all(), [
+            'sexo_nombre' => 'required',
+        ]);
+        foreach ($validator->errors()->getMessages() as $key => $message) {
+            $error[$key] = $message[0];
         }
 
         if (count($error) > 0) {
@@ -86,34 +79,20 @@ class SexoController extends Controller
             return response()->json($res);
         }
 
-        $dataInsert = [
-            'sexo_nombre'    => $request->input('sexo_nombre'),
-        ];
-
-        if ($request->input('sexo_id') == '') {
-            $id = DB::table('tbl_sexo')
-                ->insertGetId($dataInsert);
-        }else{
-            DB::table('tbl_sexo')
-                ->where('sexo_id', $request->input('sexo_id'))
-                ->update($dataInsert);
-            $id = $request->input('sexo_id');
+        if (!$request->filled('sexo_id')) {
+            $sexo = Sexo::create($request->all());
+            return response()->json(['status' => STATUS_OK, 'id' => $sexo->sexo_id]);
         }
-
-        $result = ['status'=>STATUS_OK,'id'=>$id];
-
-        return response()->json($result);
+        $sexo = Sexo::updateRow($request);
+        return response()->json(['status' => STATUS_OK, 'id' => $sexo->sexo_id]);
     }
 
-    public function eliminar(Request $request){
-        if ($request->input('id') == '') {
-            $res = ['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada'];
-            return response()->json($res);
+    public function eliminar(Request $request)
+    {
+        if (!$request->filled('id')) {
+            return response()->json(['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada']);
         }
-        DB::table('tbl_sexo')
-            ->where('sexo_id', $request->input('id'))
-            ->delete();
-
-        return response()->json(['status'=>STATUS_OK]);
+        Sexo::deleteSexo($request->input('id'));
+        return response()->json(['status' => STATUS_OK]);
     }
 }

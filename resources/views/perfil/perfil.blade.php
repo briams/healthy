@@ -44,8 +44,19 @@
                                                 {{--<span class="error modulo_id"></span>--}}
                                                 @foreach ($modulosPadre as $modulo)
                                                     <div class="grouped fields">
-                                                        @if (count($modulo->hijos) > 0)
-                                                            <label>{{$modulo->nombre}}</label>
+                                                        {{--@if (count($modulo->hijos) > 0)--}}
+                                                            {{--<label>{{$modulo->nombre}}</label>--}}
+
+
+                                                            <div class="field">
+                                                                <div class="ui checkbox">
+                                                                    <input type="checkbox"
+                                                                           name="modulo_{{ $modulo->idModule }}"
+                                                                           {{ $modulo->privilegio }} value="{{ $modulo->idModule }}"
+                                                                           id="modulo_{{ $modulo->idModule }}">
+                                                                    <label for="modulo_{{ $modulo->idModule }}">{{ $modulo->nombre }}</label>
+                                                                </div>
+                                                            </div>
                                                             @foreach ($modulo->hijos as $hijo)
                                                                 <div class="field" style="margin-left:20px;">
                                                                     <div class="ui checkbox">
@@ -57,17 +68,17 @@
                                                                     </div>
                                                                 </div>
                                                             @endforeach
-                                                        @else
-                                                            <div class="field">
-                                                                <div class="ui checkbox">
-                                                                    <input type="checkbox"
-                                                                           name="modulo_{{ $modulo->idModule }}"
-                                                                           {{ $modulo->privilegio }} value="{{ $modulo->idModule }}"
-                                                                           id="modulo_{{ $modulo->idModule }}">
-                                                                    <label for="modulo_{{ $modulo->idModule }}">{{ $modulo->nombre }}</label>
-                                                                </div>
-                                                            </div>
-                                                        @endif
+                                                        {{--@else--}}
+                                                            {{--<div class="field">--}}
+                                                                {{--<div class="ui checkbox">--}}
+                                                                    {{--<input type="checkbox"--}}
+                                                                           {{--name="modulo_{{ $modulo->idModule }}"--}}
+                                                                           {{--{{ $modulo->privilegio }} value="{{ $modulo->idModule }}"--}}
+                                                                           {{--id="modulo_{{ $modulo->idModule }}">--}}
+                                                                    {{--<label for="modulo_{{ $modulo->idModule }}">{{ $modulo->nombre }}</label>--}}
+                                                                {{--</div>--}}
+                                                            {{--</div>--}}
+                                                        {{--@endif--}}
                                                     </div>
                                                 @endforeach
                                             </div>
@@ -90,7 +101,7 @@
             var modulesPriv = [];
 
             @foreach ($modulosPadre as $modulo)
-            @if (count($modulo->hijos) > 0)
+            {{--@if (count($modulo->hijos) > 0)--}}
             @foreach ($modulo->hijos as $hijo)
             @if ($hijo->privilegio != '')
             modulesPriv.push({{ $hijo->idModule }}+'');
@@ -106,7 +117,7 @@
                 console.log(modulesPriv)
             });
             @endforeach
-            @else
+            {{--@else--}}
             @if ($modulo->privilegio != '')
             modulesPriv.push({{ $modulo->idModule }}+'');
             @endif
@@ -120,7 +131,7 @@
                 }
                 console.log(modulesPriv)
             });
-            @endif
+            {{--@endif--}}
             @endforeach
 
             $('#button_back').click(function (e) {

@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Producto;
+use App\UnidadMedida;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class ProductoController extends Controller
 {
@@ -17,17 +20,8 @@ class ProductoController extends Controller
         $take = $request->input('take');
         $skip = $request->input('skip');
 
-        $select = DB::table('tbl_producto')
-            ->leftJoin('tbl_unidad_medida', 'tbl_producto.pro_unidad_medida', '=', 'tbl_unidad_medida.umd_id')
-            ->where('pro_estado', '>', -1);
-
-        $countSelect = clone $select;
-        $rsCount = $countSelect->get();
-        $countRegs = count($rsCount);
-        $select->orderBy('pro_id', 'desc')
-            ->limit($take)
-            ->offset($skip);
-        $rows = $select->get();
+        $countRegs = Producto::getCountProducto();
+        $rows = Producto::getList($take, $skip);
 
         foreach ($rows as $row) {
             $tool = '
@@ -84,48 +78,34 @@ class ProductoController extends Controller
 
     public function edit($idProducto = '')
     {
-        $rsProducto = DB::table('tbl_producto')
-            ->where('pro_id', '=', $idProducto)
-            ->first();
-
-        $UnidadMedidas = DB::table('tbl_unidad_medida')
-            ->orderBy('umd_id', 'asc')
-            ->get();
-
+        $UnidadMedidas = UnidadMedida::getAllList();
         if ($idProducto == '') {
-            return view('producto.producto',[
-                'UnidadMedidas'  => $UnidadMedidas,
+            return view('producto.producto', [
+                'UnidadMedidas' => $UnidadMedidas,
             ]);
-        } else {
-            if ($rsProducto) {
-                return view('producto.producto', [
-                    'rsProducto' => $rsProducto,
-                    'UnidadMedidas'  => $UnidadMedidas,
-                ]);
-            } else {
-                return redirect()->action('ProductoController@index');
-            }
         }
 
+        $rsProducto = Producto::getProducto($idProducto);
+        if (!$rsProducto) {
+            return redirect()->action('ProductoController@index');
+        }
+        return view('producto.producto', [
+            'rsProducto' => $rsProducto,
+            'UnidadMedidas' => $UnidadMedidas,
+        ]);
     }
 
     public function save(Request $request)
     {
         $error = [];
-        if ($request->input('pro_codigo') == '') {
-            $error['pro_codigo'] = "Debe ingresar codigo del producto";
-        }
-
-        if ($request->input('pro_nombre') == '') {
-            $error['pro_nombre'] = "Debe ingresar nombre del producto";
-        }
-
-        if ($request->input('pro_unidad_medida') == '') {
-            $error['pro_unidad_medida'] = "Debe seleccione unidad de medida del producto";
-        }
-
-        if ($request->input('pro_laboratorio') == '') {
-            $error['pro_laboratorio'] = "Debe ingresar laboratorio del producto";
+        $validator = Validator::make($request->all(), [
+            'pro_codigo' => 'required',
+            'pro_nombre' => 'required',
+            'pro_unidad_medida' => 'required',
+            'pro_laboratorio' => 'required',
+        ]);
+        foreach ($validator->errors()->getMessages() as $key => $message) {
+            $error[$key] = $message[0];
         }
 
         if (count($error) > 0) {
@@ -133,62 +113,45 @@ class ProductoController extends Controller
             return response()->json($res);
         }
 
-        $dataInsert = [
-            'pro_codigo'    => $request->input('pro_codigo'),
-            'pro_nombre'    => $request->input('pro_nombre'),
-            'pro_unidad_medida'    => $request->input('pro_unidad_medida'),
-            'pro_laboratorio'    => $request->input('pro_laboratorio'),
-        ];
-
-        if ($request->input('pro_id') == '') {
-            $dataInsert['pro_estado'] = ST_NUEVO;
-            $id = DB::table('tbl_producto')
-                ->insertGetId($dataInsert);
-        }else{
-            DB::table('tbl_producto')
-                ->where('pro_id', $request->input('pro_id'))
-                ->update($dataInsert);
-            $id = $request->input('pro_id');
+        if (!$request->filled('pro_id')) {
+            $request->merge(['pro_estado' => ST_NUEVO]);
+            $producto = Producto::create($request->all());
+            return response()->json(['status' => STATUS_OK, 'id' => $producto->pro_id]);
         }
-
-        $result = ['status'=>STATUS_OK,'id'=>$id];
-
-        return response()->json($result);
+        $producto = Producto::updateRow($request);
+        return response()->json(['status' => STATUS_OK, 'id' => $producto->pro_id]);
     }
 
-    public function bloquear(Request $request){
-        if ($request->input('id') == '') {
-            $res = ['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada'];
-            return response()->json($res);
+    public function bloquear(Request $request)
+    {
+        if (!$request->filled('id')) {
+            return response()->json(['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada']);
         }
-        DB::table('tbl_producto')
-            ->where('pro_id', $request->input('id'))
-            ->update([ 'pro_estado' => ST_INACTIVO ]);
-
-        return response()->json(['status'=>STATUS_OK]);
+        $request->merge(['pro_id' => $request->input('id')]);
+        $request->merge(['pro_estado' => ST_INACTIVO]);
+        Producto::updateRow($request);
+        return response()->json(['status' => STATUS_OK]);
     }
 
-    public function activar(Request $request){
-        if ($request->input('id') == '') {
-            $res = ['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada'];
-            return response()->json($res);
+    public function activar(Request $request)
+    {
+        if (!$request->filled('id')) {
+            return response()->json(['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada']);
         }
-        DB::table('tbl_producto')
-            ->where('pro_id', $request->input('id'))
-            ->update([ 'pro_estado' => ST_ACTIVO ]);
-
-        return response()->json(['status'=>STATUS_OK]);
+        $request->merge(['pro_id' => $request->input('id')]);
+        $request->merge(['pro_estado' => ST_ACTIVO]);
+        Producto::updateRow($request);
+        return response()->json(['status' => STATUS_OK]);
     }
 
-    public function eliminar(Request $request){
-        if ($request->input('id') == '') {
-            $res = ['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada'];
-            return response()->json($res);
+    public function eliminar(Request $request)
+    {
+        if (!$request->filled('id')) {
+            return response()->json(['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada']);
         }
-        DB::table('tbl_producto')
-            ->where('pro_id', $request->input('id'))
-            ->update([ 'pro_estado' => ST_ELIMINADO ]);
-
-        return response()->json(['status'=>STATUS_OK]);
+        $request->merge(['pro_id' => $request->input('id')]);
+        $request->merge(['pro_estado' => ST_ELIMINADO]);
+        Producto::updateRow($request);
+        return response()->json(['status' => STATUS_OK]);
     }
 }

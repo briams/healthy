@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Modulo;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class ModuleController extends Controller
 {
@@ -17,18 +19,9 @@ class ModuleController extends Controller
     {
         $take = $request->input('take');
         $skip = $request->input('skip');
-//        $q = $request->input('q');
 
-        $select = DB::table('tbl_module')
-            ->where('estado', '>', -1);
-
-        $countSelect = clone $select;
-        $rsCount = $countSelect->get();
-        $countRegs = count($rsCount);
-        $select->orderBy('idModule', 'desc')
-            ->limit($take)
-            ->offset($skip);
-        $rows = $select->get();
+        $countRegs = Modulo::getCountModule();
+        $rows = Modulo::getList($take, $skip);
 
         foreach ($rows as $row) {
             $tool = '
@@ -50,9 +43,7 @@ class ModuleController extends Controller
                         <i class="red lock icon"></i>
 		                Bloquear
 		                </div>';
-//            } elseif ($row->estado == ST_ACTIVO) {
-//                $row->estado = '<div class="ui label mini green" > Activo</div > ';
-            } elseif ($row->estado == 0 ) {
+            } elseif ($row->estado == 0) {
                 $row->estado = '<div class="ui label mini red" > Inactivo</div > ';
                 $tool .= '
 		                <div class="ui divider"></div>
@@ -72,48 +63,34 @@ class ModuleController extends Controller
 
     public function edit($idModulo = '')
     {
-        $modulo = DB::table('tbl_module')
-            ->where('idModule', '=', $idModulo)
-            ->first();
+        $moduloPadre = Modulo::getListModuleParent();
 
-        $moduloPadre = DB::table('tbl_module')
-            ->where('is_parent', '=', DB_TRUE)
-            ->get();
-
-//        dd($moduloPadre);
         if ($idModulo == '') {
             return view('module.modulo', [
                 'moduloPadre' => $moduloPadre,
             ]);
-        } else {
-            if ($modulo) {
-                return view('module.modulo', [
-                    'modulo' => $modulo,
-                    'moduloPadre' => $moduloPadre,
-                ]);
-            } else {
-//                return view('module.main');
-                return redirect()->action('ModuleController@index');
-            }
         }
+        $modulo = Modulo::getModule($idModulo);
 
+        if (!$modulo) {
+            return redirect()->action('ModuleController@index');
+        }
+        return view('module.modulo', [
+            'modulo' => $modulo,
+            'moduloPadre' => $moduloPadre,
+        ]);
     }
 
     public function save(Request $request)
     {
-
         $error = [];
-
-        if ($request->input('nombre') == '') {
-            $error['nombre'] = "Debe ingresar nombre del modulo";
-        }
-
-        if ($request->input('url') == '') {
-            $error['url'] = "Debe ingresar nombre del modulo";
-        }
-
-        if ($request->input('orden') == '') {
-            $error['orden'] = "Debe ingresar nombre del modulo";
+        $validator = Validator::make($request->all(), [
+            'nombre' => 'required',
+            'url' => 'required',
+            'orden' => 'required',
+        ]);
+        foreach ($validator->errors()->getMessages() as $key => $message) {
+            $error[$key] = $message[0];
         }
 
         if (count($error) > 0) {
@@ -121,58 +98,39 @@ class ModuleController extends Controller
             return response()->json($res);
         }
 
-        if ($request->input('padre_id') == '' and $request->input('is_parent') == 0) {
-            $res = ['status' => STATUS_FAIL, 'data' => $error, 'msg' => 'Indique si este modulo sera padre o Seleccione un padre'];
-            return response()->json($res);
+        if (  (!$request->filled('padre_id')) and $request->input('is_parent') == 0) {
+            return response()->json(['status' => STATUS_FAIL, 'data' => $error, 'msg' => 'Indique si este modulo sera padre o Seleccione un padre']);
         }
 
-        $dataInsert = [
-            'nombre'    => $request->input('nombre'),
-            'url'       => $request->input('url'),
-            'icono'     => $request->input('icono'),
-            'orden'     => $request->input('orden'),
-            'padre_id'  => $request->input('padre_id'),
-            'is_parent' => $request->input('is_parent'),
-        ];
-
-        if ($request->input('idModule') == '') {
-            $dataInsert['estado'] = ST_NUEVO;
-            $id = DB::table('tbl_module')
-                    ->insertGetId($dataInsert);
-        }else{
-            DB::table('tbl_module')
-                ->where('idModule', $request->input('idModule'))
-                ->update($dataInsert);
-            $id = $request->input('idModule');
+        if (!$request->filled('idModule')) {
+            $request->merge(['estado' => DB_TRUE]);
+            $modulo = Modulo::create($request->all());
+            return response()->json(['status' => STATUS_OK, 'id' => $modulo->idModule]);
         }
-
-        $result = ['status'=>STATUS_OK,'id'=>$id];
-
-        return response()->json($result);
+        $modulo = Modulo::updateRow($request);
+        return response()->json(['status' => STATUS_OK, 'id' => $modulo->idModule]);
     }
 
-    public function bloquear(Request $request){
-        if ($request->input('id') == '') {
-            $res = ['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada'];
-            return response()->json($res);
+    public function bloquear(Request $request)
+    {
+        if (!$request->filled('id')) {
+            return response()->json(['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada']);
         }
-        DB::table('tbl_module')
-            ->where('idModule', $request->input('id'))
-            ->update([ 'estado' => 0 ]);
-
-        return response()->json(['status'=>STATUS_OK]);
+        $request->merge(['idModule' => $request->input('id')]);
+        $request->merge(['estado' => DB_FALSE]);
+        Modulo::updateRow($request);
+        return response()->json(['status' => STATUS_OK]);
     }
 
-    public function activar(Request $request){
-        if ($request->input('id') == '') {
-            $res = ['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada'];
-            return response()->json($res);
+    public function activar(Request $request)
+    {
+        if (!$request->filled('id')) {
+            return response()->json(['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada']);
         }
-        DB::table('tbl_module')
-            ->where('idModule', $request->input('id'))
-            ->update([ 'estado' => ST_NUEVO ]);
-
-        return response()->json(['status'=>STATUS_OK]);
+        $request->merge(['idModule' => $request->input('id')]);
+        $request->merge(['estado' => DB_TRUE]);
+        Modulo::updateRow($request);
+        return response()->json(['status' => STATUS_OK]);
     }
 
 }

@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Modulo;
+use App\Perfil;
+use App\Privilegio;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class PerfilController extends Controller
 {
@@ -17,16 +21,8 @@ class PerfilController extends Controller
         $take = $request->input('take');
         $skip = $request->input('skip');
 
-        $select = DB::table('tbl_perfil')
-            ->where('perfil_estado', '>', -1);
-
-        $countSelect = clone $select;
-        $rsCount = $countSelect->get();
-        $countRegs = count($rsCount);
-        $select->orderBy('perfil_id', 'desc')
-            ->limit($take)
-            ->offset($skip);
-        $rows = $select->get();
+        $countRegs = Perfil::getCountPerfil();
+        $rows = Perfil::getList($take, $skip);
 
         foreach ($rows as $row) {
             $tool = '
@@ -82,149 +78,104 @@ class PerfilController extends Controller
 
     public function edit($idPerfil = '')
     {
-        $perfil = DB::table('tbl_perfil')
-            ->where('perfil_id', '=', $idPerfil)
-            ->first();
-
-        $modulosPadres = DB::table('tbl_module')
-            ->where('estado','=',1)
-            ->where('is_parent','=',1)
-            ->orderBy('orden', 'asc')
-            ->get();
-
-        foreach($modulosPadres as $padre)
-        {
-            $hijos =  DB::table('tbl_module')
-                ->where('padre_id', $padre->idModule)
-                ->orderBy('orden', 'asc')
-                ->get();
-            foreach($hijos as $hijo)
-            {
-                $privilegio =  DB::table('tbl_privilegio')
-                    ->where('priv_perfil_id', $idPerfil)
-                    ->where('priv_modulo_id', $hijo->idModule)
-                    ->first();
-                if ($privilegio){
-                    $hijo->privilegio = "checked";
-                }else{
-                    $hijo->privilegio = "";
-                }
+        $modulosPadres = Modulo::getListModuleParent();
+        foreach ($modulosPadres as $padre) {
+            $hijos = Modulo::getListModuleChildren($padre->idModule);
+            foreach ($hijos as $hijo) {
+                $privilegio = Privilegio::getPrivilegio($idPerfil, $hijo->idModule);
+                $hijo->privilegio = ($privilegio) ? "checked" : "";
             }
-            $privilegio =  DB::table('tbl_privilegio')
-                ->where('priv_perfil_id', $idPerfil)
-                ->where('priv_modulo_id', $padre->idModule)
-                ->first();
-            if ($privilegio){
-                $padre->privilegio = "checked";
-            }else{
-                $padre->privilegio = "";
-            }
+            $privilegio = Privilegio::getPrivilegio($idPerfil, $padre->idModule);
+            $padre->privilegio = ($privilegio) ? "checked" : "";
             $padre->hijos = $hijos;
         }
-
 
         if ($idPerfil == '') {
             return view('perfil.perfil', [
                 'modulosPadre' => $modulosPadres,
             ]);
-        } else {
-            if ($perfil) {
-                return view('perfil.perfil', [
-                    'perfil' => $perfil,
-                    'modulosPadre' => $modulosPadres,
-                ]);
-            } else {
-                return redirect()->action('PerfilController@index');
-            }
         }
+
+        $perfil = Perfil::getPerfil($idPerfil);
+        if (!$perfil) {
+            return redirect()->action('PerfilController@index');
+        }
+        return view('perfil.perfil', [
+            'perfil' => $perfil,
+            'modulosPadre' => $modulosPadres,
+        ]);
 
     }
 
     public function save(Request $request)
     {
-
         $error = [];
-
-        if ($request->input('perfil_nombre') == '') {
-            $error['perfil_nombre'] = "Debe ingresar nombre del perfil";
+        $validator = Validator::make($request->all(), [
+            'perfil_nombre' => 'required',
+        ]);
+        foreach ($validator->errors()->getMessages() as $key => $message) {
+            $error[$key] = $message[0];
         }
-
         if (count($error) > 0) {
-            $res = ['status' => STATUS_FAIL, 'data' => $error, 'msg' => 'Complete los campos marcado en rojo'];
-            return response()->json($res);
+            return response()->json(['status' => STATUS_FAIL, 'data' => $error, 'msg' => 'Complete los campos marcado en rojo']);
         }
-
-
-        if ( $request->input('modulesPriv') === null ) {
-            $res = ['status' => STATUS_FAIL, 'data' => $error, 'msg' => 'Seleccione al menos un modulo para darle acceso'];
-            return response()->json($res);
+        if ($request->input('modulesPriv') === null) {
+            return response()->json(['status' => STATUS_FAIL, 'data' => $error, 'msg' => 'Seleccione al menos un modulo para darle acceso']);
         }
 
         $dataInsert = [
-            'perfil_nombre'    => $request->input('perfil_nombre'),
+            'perfil_nombre' => $request->input('perfil_nombre'),
         ];
-
-        if ($request->input('perfil_id') == '') {
+        if (!$request->filled('perfil_id')) {
             $dataInsert['perfil_estado'] = ST_NUEVO;
-            $id = DB::table('tbl_perfil')
-                ->insertGetId($dataInsert);
-        }else{
-            DB::table('tbl_perfil')
-                ->where('perfil_id', $request->input('perfil_id'))
-                ->update($dataInsert);
-            $id = $request->input('perfil_id');
-
-            DB::table('tbl_privilegio')
-                ->where('priv_perfil_id', '=', $id)
-                ->delete();
+            $perfil = Perfil::create($dataInsert);
+            $id = $perfil->perfil_id;
+        } else {
+            $dataInsert['perfil_id'] = $request->input('perfil_id');
+            $id = Perfil::updateRow($dataInsert);
+            Privilegio::deletePrivilegio($id);
         }
-
-        foreach ($request->input('modulesPriv') as $row){
+        foreach ($request->input('modulesPriv') as $row) {
             $dataPrivilegio[] = [
-                'priv_perfil_id'    => $id,
-                'priv_modulo_id'    => $row,
+                'priv_perfil_id' => $id,
+                'priv_modulo_id' => $row,
             ];
         }
-        DB::table('tbl_privilegio')->insert( $dataPrivilegio );
+        Privilegio::insert($dataPrivilegio);
 
-        $result = ['status'=>STATUS_OK,'id'=>$id];
-
-        return response()->json($result);
+        return response()->json(['status' => STATUS_OK, 'id' => $id]);
     }
 
-    public function bloquear(Request $request){
-        if ($request->input('id') == '') {
-            $res = ['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada'];
-            return response()->json($res);
+    public function bloquear(Request $request)
+    {
+        if (!$request->filled('id')) {
+            return response()->json(['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada']);
         }
-        DB::table('tbl_perfil')
-            ->where('perfil_id', $request->input('id'))
-            ->update([ 'perfil_estado' => ST_INACTIVO ]);
-
-        return response()->json(['status'=>STATUS_OK]);
+        $request->merge(['perfil_id' => $request->input('id')]);
+        $request->merge(['perfil_estado' => ST_INACTIVO]);
+        Perfil::updateStatus($request);
+        return response()->json(['status' => STATUS_OK]);
     }
 
-    public function activar(Request $request){
-        if ($request->input('id') == '') {
-            $res = ['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada'];
-            return response()->json($res);
+    public function activar(Request $request)
+    {
+        if (!$request->filled('id')) {
+            return response()->json(['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada']);
         }
-        DB::table('tbl_perfil')
-            ->where('perfil_id', $request->input('id'))
-            ->update([ 'perfil_estado' => ST_ACTIVO ]);
-
-        return response()->json(['status'=>STATUS_OK]);
+        $request->merge(['perfil_id' => $request->input('id')]);
+        $request->merge(['perfil_estado' => ST_ACTIVO]);
+        Perfil::updateStatus($request);
+        return response()->json(['status' => STATUS_OK]);
     }
 
-    public function eliminar(Request $request){
-        if ($request->input('id') == '') {
-            $res = ['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada'];
-            return response()->json($res);
+    public function eliminar(Request $request)
+    {
+        if (!$request->filled('id')) {
+            return response()->json(['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada']);
         }
-        DB::table('tbl_perfil')
-            ->where('perfil_id', $request->input('id'))
-            ->update([ 'perfil_estado' => ST_ELIMINADO ]);
-
-        return response()->json(['status'=>STATUS_OK]);
+        $request->merge(['perfil_id' => $request->input('id')]);
+        $request->merge(['perfil_estado' => ST_ELIMINADO]);
+        Perfil::updateStatus($request);
+        return response()->json(['status' => STATUS_OK]);
     }
 }

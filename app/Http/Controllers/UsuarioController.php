@@ -24,7 +24,8 @@ class UsuarioController extends Controller
         $skip = $request->input('skip');
 
         $countRegs = Usuario::getCountUsers();
-        $rows = Usuario::geList($take, $skip);
+        $rows = Usuario::getList($take, $skip);
+
         foreach ($rows as $row) {
             $tool = '
                         <div class="mini ui button left pointing dropdown compact icon circular">
@@ -79,7 +80,7 @@ class UsuarioController extends Controller
 
     public function edit($idUser = '')
     {
-        $perfiles = Perfil::getList();
+        $perfiles = Perfil::getActivePerfil();
         if ($idUser == '') {
             return view('usuarios.usuario', [
                 'perfiles' => $perfiles,
@@ -108,10 +109,13 @@ class UsuarioController extends Controller
         foreach ($validator->errors()->getMessages() as $key => $message) {
             $error[$key] = $message[0];
         }
+        $rsUser = Usuario::getUSerEmail( $request->input('email') );
+        if ($rsUser and $rsUser->idUsuario != $request->input('idUsuario') ) {
+            $error['email'] = "Ya existe un usuario usando este E-mail";
+        }
 
         if (count($error) > 0) {
-            $res = ['status' => STATUS_FAIL, 'data' => $error, 'msg' => 'Complete los campos marcado en rojo'];
-            return response()->json($res);
+            return response()->json(['status' => STATUS_FAIL, 'data' => $error, 'msg' => 'Complete los campos marcado en rojo']);
         }
 
         if (!$request->filled('password')) {
@@ -131,14 +135,12 @@ class UsuarioController extends Controller
 
     public function bloquear(Request $request)
     {
-        if ($request->input('id') == '') {
-            $res = ['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada'];
-            return response()->json($res);
+        if (!$request->filled('id')) {
+            return response()->json(['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada']);
         }
-        DB::table('tbl_usuario')
-            ->where('idUsuario', $request->input('id'))
-            ->update(['estado' => ST_INACTIVO]);
-
+        $request->merge(['idUsuario' => $request->input('id')]);
+        $request->merge(['estado' => ST_INACTIVO]);
+        Usuario::updateRow($request);
         return response()->json(['status' => STATUS_OK]);
     }
 
@@ -155,14 +157,12 @@ class UsuarioController extends Controller
 
     public function eliminar(Request $request)
     {
-        if ($request->input('id') == '') {
-            $res = ['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada'];
-            return response()->json($res);
+        if (!$request->filled('id')) {
+            return response()->json(['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada']);
         }
-        DB::table('tbl_usuario')
-            ->where('idUsuario', $request->input('id'))
-            ->update(['estado' => ST_ELIMINADO]);
-
+        $request->merge(['idUsuario' => $request->input('id')]);
+        $request->merge(['estado' => ST_ELIMINADO]);
+        Usuario::updateRow($request);
         return response()->json(['status' => STATUS_OK]);
     }
 }

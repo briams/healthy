@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Vacuna;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class VacunaController extends Controller
 {
@@ -17,16 +19,8 @@ class VacunaController extends Controller
         $take = $request->input('take');
         $skip = $request->input('skip');
 
-        $select = DB::table('tbl_vacuna')
-            ->where('vac_estado', '>', -1);
-
-        $countSelect = clone $select;
-        $rsCount = $countSelect->get();
-        $countRegs = count($rsCount);
-        $select->orderBy('vac_id', 'desc')
-            ->limit($take)
-            ->offset($skip);
-        $rows = $select->get();
+        $countRegs = Vacuna::getCountVacuna();
+        $rows = Vacuna::getList($take, $skip);
 
         foreach ($rows as $row) {
             $tool = '
@@ -83,33 +77,29 @@ class VacunaController extends Controller
 
     public function edit($idVacuna = '')
     {
-        $rsVacuna = DB::table('tbl_vacuna')
-            ->where('vac_id', '=', $idVacuna)
-            ->first();
-
         if ($idVacuna == '') {
             return view('vacuna.vacuna');
-        } else {
-            if ($rsVacuna) {
-                return view('vacuna.vacuna', [
-                    'rsVacuna' => $rsVacuna,
-                ]);
-            } else {
-                return redirect()->action('VacunaController@index');
-            }
         }
 
+        $rsVacuna = Vacuna::getVacuna($idVacuna);
+
+        if (!$rsVacuna) {
+            return redirect()->action('VacunaController@index');
+        }
+        return view('vacuna.vacuna', [
+            'rsVacuna' => $rsVacuna,
+        ]);
     }
 
     public function save(Request $request)
     {
         $error = [];
-        if ($request->input('vac_abreviatura') == '') {
-            $error['vac_abreviatura'] = "Debe ingresar abreviatura de la vacuna";
-        }
-
-        if ($request->input('vac_descripcion') == '') {
-            $error['vac_descripcion'] = "Debe ingresar descripcion de la vacuna";
+        $validator = Validator::make($request->all(), [
+            'vac_abreviatura' => 'required',
+            'vac_descripcion' => 'required',
+        ]);
+        foreach ($validator->errors()->getMessages() as $key => $message) {
+            $error[$key] = $message[0];
         }
 
         if (count($error) > 0) {
@@ -117,60 +107,45 @@ class VacunaController extends Controller
             return response()->json($res);
         }
 
-        $dataInsert = [
-            'vac_descripcion'    => $request->input('vac_descripcion'),
-            'vac_abreviatura'    => $request->input('vac_abreviatura'),
-        ];
-
-        if ($request->input('vac_id') == '') {
-            $dataInsert['vac_estado'] = ST_NUEVO;
-            $id = DB::table('tbl_vacuna')
-                ->insertGetId($dataInsert);
-        }else{
-            DB::table('tbl_vacuna')
-                ->where('vac_id', $request->input('vac_id'))
-                ->update($dataInsert);
-            $id = $request->input('vac_id');
+        if (!$request->filled('vac_id')) {
+            $request->merge(['vac_estado' => ST_NUEVO]);
+            $vacuna = Vacuna::create($request->all());
+            return response()->json(['status' => STATUS_OK, 'id' => $vacuna->vac_id]);
         }
-
-        $result = ['status'=>STATUS_OK,'id'=>$id];
-
-        return response()->json($result);
+        $vacuna = Vacuna::updateRow($request);
+        return response()->json(['status' => STATUS_OK, 'id' => $vacuna->vac_id]);
     }
 
-    public function bloquear(Request $request){
-        if ($request->input('id') == '') {
-            $res = ['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada'];
-            return response()->json($res);
+    public function bloquear(Request $request)
+    {
+        if (!$request->filled('id')) {
+            return response()->json(['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada']);
         }
-        DB::table('tbl_vacuna')
-            ->where('vac_id', $request->input('id'))
-            ->update([ 'vac_estado' => ST_INACTIVO ]);
-
-        return response()->json(['status'=>STATUS_OK]);
+        $request->merge(['vac_id' => $request->input('id')]);
+        $request->merge(['vac_estado' => ST_INACTIVO]);
+        Vacuna::updateRow($request);
+        return response()->json(['status' => STATUS_OK]);
     }
 
-    public function activar(Request $request){
-        if ($request->input('id') == '') {
-            $res = ['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada'];
-            return response()->json($res);
+    public function activar(Request $request)
+    {
+        if (!$request->filled('id')) {
+            return response()->json(['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada']);
         }
-        DB::table('tbl_vacuna')
-            ->where('vac_id', $request->input('id'))
-            ->update([ 'vac_estado' => ST_ACTIVO ]);
-
-        return response()->json(['status'=>STATUS_OK]);
+        $request->merge(['vac_id' => $request->input('id')]);
+        $request->merge(['vac_estado' => ST_ACTIVO]);
+        Vacuna::updateRow($request);
+        return response()->json(['status' => STATUS_OK]);
     }
 
-    public function eliminar(Request $request){
-        if ($request->input('id') == '') {
-            $res = ['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada'];
-            return response()->json($res);
+    public function eliminar(Request $request)
+    {
+        if (!$request->filled('id')) {
+            return response()->json(['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada']);
         }
-        DB::table('tbl_vacuna')
-            ->where('vac_id', $request->input('id'))
-            ->update([ 'vac_estado' => ST_ELIMINADO ]);
-
-        return response()->json(['status'=>STATUS_OK]);
+        $request->merge(['vac_id' => $request->input('id')]);
+        $request->merge(['vac_estado' => ST_ELIMINADO]);
+        Vacuna::updateRow($request);
+        return response()->json(['status' => STATUS_OK]);
     }
 }

@@ -63,9 +63,9 @@
                                                 </div>
                                                 <div class="six wide field usuario_perfil_id" >
                                                     @if (count($perfiles) > 0)
-                                                    <label>Modulo Padre</label>
+                                                    <label>Perfil</label>
                                                     <select class="ui search dropdown" id="usuario_perfil_id" name="usuario_perfil_id">
-                                                        <option value="">Seleccione Padre</option>
+                                                        <option value="">Seleccione Perfil</option>
                                                         @foreach ($perfiles as $perfil)
                                                         <option value="{{$perfil->perfil_id}}" @if (isset($user)) @if ($perfil->perfil_id == $user->usuario_perfil_id ) selected @endif @endif >{{ $perfil->perfil_nombre }}</option>
                                                         @endforeach

@@ -24,24 +24,32 @@ class Usuario extends Model
         'estado',
     ];
 
-    public static function geList($take, $skip, $filter = 'idUsuario')
+    public static function getList($take, $skip)
     {
         return self::getClone()
-            ->orderBy($filter, 'desc')
+            ->orderBy('idUsuario', 'desc')
             ->limit($take)
-            ->offset($skip)->get();
-    }
-
-    public static function getUSer($idUsuario)
-    {
-        return Usuario::where('idUsuario', '=', $idUsuario)->first();
+            ->offset($skip)
+            ->get();
     }
 
     public static function getCountUsers()
     {
-        return Usuario::where('estado', '!=', ST_ELIMINADO)->count();
+        return self::getClone()
+            ->count();
     }
 
+    public static function getUSer($idUsuario)
+    {
+        return Usuario::where('idUsuario', '=', $idUsuario)
+            ->first();
+    }
+
+    public static function getUSerEmail($usuario)
+    {
+        return Usuario::where('email', '=', $usuario)
+            ->first();
+    }
 
     private static function getClone()
     {
@@ -49,11 +57,13 @@ class Usuario extends Model
     }
 
     /**
-     * @param $request: its a request
+     * @param $request : its a request
      * @return Usuario
      */
-    public static function updateRow($request) {
+    public static function updateRow($request)
+    {
         $usuario = Usuario::findOrFail($request->input('idUsuario'));
-        return $usuario->fill($request->all())->save();
+        $usuario->fill($request->all())->save();
+        return $usuario;
     }
 }

@@ -122,4 +122,17 @@ Route::group(['prefix'=>'mascota'],function(){
     Route::post('/bloquear','MascotaController@bloquear');
     Route::post('/activar','MascotaController@activar');
     Route::post('/eliminar','MascotaController@eliminar');
+    Route::post('/cargar-raza','MascotaController@cargarRaza');
+    Route::get('/historia/{idMascota?}','MascotaController@historia');
+});
+
+Route::group(['prefix'=>'historia'],function(){
+    Route::post('/save','HistoriaController@save');
+});
+
+Route::group(['prefix'=>'vacunacion'],function(){
+    Route::post('/get-main-list', 'VacunacionController@GetMainList');
+    Route::get('/editar/{idHistoria}/{idVacunacion?}','VacunacionController@edit');
+    Route::post('/save','VacunacionController@save');
+    Route::post('/eliminar','VacunacionController@eliminar');
 });

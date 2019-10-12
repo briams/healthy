@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -30,9 +31,7 @@ class MainController extends Controller
         $usuario = $request->input('email');
         $pass = $request->input('password');
 
-        $rsUser = DB::table('tbl_usuario')
-            ->where('email', '=', $usuario)
-            ->first();
+        $rsUser = Usuario::getUSerEmail($usuario);
 
         if (!$rsUser) {
             return response()->json(['status' => STATUS_FAIL, 'error' => 1, 'msg' => 'Usuario no válido']);

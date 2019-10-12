@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Especie;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class EspecieController extends Controller
 {
@@ -18,15 +20,8 @@ class EspecieController extends Controller
         $take = $request->input('take');
         $skip = $request->input('skip');
 
-        $select = DB::table('tbl_especie');
-
-        $countSelect = clone $select;
-        $rsCount = $countSelect->get();
-        $countRegs = count($rsCount);
-        $select->orderBy('especie_id', 'desc')
-            ->limit($take)
-            ->offset($skip);
-        $rows = $select->get();
+        $countRegs = Especie::getCountEspecie();
+        $rows = Especie::getList($take, $skip);
 
         foreach ($rows as $row) {
             $tool = '
@@ -57,29 +52,27 @@ class EspecieController extends Controller
 
     public function edit($idEspecie = '')
     {
-        $especie = DB::table('tbl_especie')
-            ->where('especie_id', '=', $idEspecie)
-            ->first();
-
         if ($idEspecie == '') {
             return view('especies.especie');
-        } else {
-            if ($especie) {
-                return view('especies.especie', [
-                    'especie' => $especie,
-                ]);
-            } else {
-                return redirect()->action('EspecieController@index');
-            }
         }
 
+        $especie = Especie::getEspecie($idEspecie);
+        if (!$especie) {
+            return redirect()->action('EspecieController@index');
+        }
+        return view('especies.especie', [
+            'especie' => $especie,
+        ]);
     }
 
     public function save(Request $request)
     {
         $error = [];
-        if ($request->input('especie_nombre') == '') {
-            $error['especie_nombre'] = "Debe ingresar nombre de la especie";
+        $validator = Validator::make($request->all(), [
+            'especie_nombre' => 'required',
+        ]);
+        foreach ($validator->errors()->getMessages() as $key => $message) {
+            $error[$key] = $message[0];
         }
 
         if (count($error) > 0) {
@@ -87,34 +80,20 @@ class EspecieController extends Controller
             return response()->json($res);
         }
 
-        $dataInsert = [
-            'especie_nombre'    => $request->input('especie_nombre'),
-        ];
-
-        if ($request->input('especie_id') == '') {
-            $id = DB::table('tbl_especie')
-                ->insertGetId($dataInsert);
-        }else{
-            DB::table('tbl_especie')
-                ->where('especie_id', $request->input('especie_id'))
-                ->update($dataInsert);
-            $id = $request->input('especie_id');
+        if (!$request->filled('especie_id')) {
+            $especie = Especie::create($request->all());
+            return response()->json(['status' => STATUS_OK, 'id' => $especie->especie_id]);
         }
-
-        $result = ['status'=>STATUS_OK,'id'=>$id];
-
-        return response()->json($result);
+        $especie = Especie::updateRow($request);
+        return response()->json(['status' => STATUS_OK, 'id' => $especie->especie_id]);
     }
 
-    public function eliminar(Request $request){
-        if ($request->input('id') == '') {
-            $res = ['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada'];
-            return response()->json($res);
+    public function eliminar(Request $request)
+    {
+        if (!$request->filled('id')) {
+            return response()->json(['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada']);
         }
-        DB::table('tbl_especie')
-            ->where('especie_id', $request->input('id'))
-            ->delete();
-
-        return response()->json(['status'=>STATUS_OK]);
+        Especie::deleteEspecie($request->input('id'));
+        return response()->json(['status' => STATUS_OK]);
     }
 }
