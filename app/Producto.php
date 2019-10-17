@@ -31,6 +31,14 @@ class Producto extends Model
         return self::getClone()->count();
     }
 
+    public static function getListActive()
+    {
+        return Producto::where('pro_estado', '=', ST_ACTIVO)
+            ->leftJoin('tbl_unidad_medida', 'tbl_producto.pro_unidad_medida', '=', 'tbl_unidad_medida.umd_id')
+            ->orderBy('pro_id', 'asc')
+            ->get();
+    }
+
     public static function getProducto($idProducto)
     {
         return Producto::where('pro_id', '=', $idProducto)

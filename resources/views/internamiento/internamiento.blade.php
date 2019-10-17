@@ -9,7 +9,7 @@
                 </button>
             </div>
             <div class="item ui colhidden">
-                <button id="vacunacion_save" class="ui button primary compact">
+                <button id="internamiento_save" class="ui button primary compact">
                     <i class="icon save"></i>Guardar
                 </button>
             </div>
@@ -22,10 +22,10 @@
         <div class="ui padded grid">
             <div class="sixteen wide column">
                 <div class="ui top attached tabular menu">
-                    <a class="active item" data-tab="first">Vacunacion</a>
+                    <a class="active item" data-tab="first">Internamiento</a>
                 </div>
                 <div class="ui bottom attached active tab segment" data-tab="first">
-                    <form action="{{ action('VacunacionController@save') }}" method="post" id="vacunacion_ficha_registro"
+                    <form action="{{ action('InternamientoController@save') }}" method="post" id="internamiento_ficha_registro"
                           class="ui form">
                         {{ csrf_field() }}
                         <div class="ui form">
@@ -33,30 +33,31 @@
                                 <div class="sixteen wide field">
                                     <div class="ui fluid card">
                                         <div class="content">
-                                            <input type="hidden" name="vacunacion_id" id="vacunacion_id"
-                                                   @if (isset($rsVacunacion)) value="{{$rsVacunacion->vacunacion_id}}" @endif>
+                                            <input type="hidden" name="internamiento_id" id="internamiento_id"
+                                                   @if (isset($rsInternamiento)) value="{{$rsInternamiento->internamiento_id}}" @endif>
 
-                                            <input type="hidden" name="vacunacion_historia_id" id="vacunacion_historia_id"
+                                            <input type="hidden" name="internamiento_historia_id" id="internamiento_historia_id"
                                                    @if (isset($idHistoria)) value="{{ $idHistoria  }}" @endif>
                                             <div class="fields">
-                                                <div class="eight wide field vacunacion_vacuna_id required">
-                                                    @if (count($vacunas) > 0)
-                                                        <label>Vacuna</label>
-                                                        <select class="ui search dropdown" id="vacunacion_vacuna_id" name="vacunacion_vacuna_id">
-                                                            <option value="">Seleccione Vacuna</option>
-                                                            @foreach ($vacunas as $vacuna)
-                                                                <option value="{{$vacuna->vac_id}}" @if (isset($rsVacunacion)) @if ($vacuna->vac_id == $rsVacunacion->vacunacion_vacuna_id ) selected  @endif @endif >{{ $vacuna->vac_descripcion }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    @endif
-                                                </div>
-                                                <div class="eight wide field vacunacion_fecha required">
-                                                    <label>Fecha</label>
+                                                <div class="eight wide field internamiento_fecha_inicio required">
+                                                    <label>Fecha Inicio</label>
                                                     <div class="ui input left icon">
                                                         <i class="calendar icon"></i>
-                                                        <input id="vacunacion_fecha" type="text" name="vacunacion_fecha"
-                                                                @if (isset($rsVacunacion)) value="{{$rsVacunacion->vacunacion_fecha}}" @endif>
+                                                        <input id="internamiento_fecha_inicio" type="text" name="internamiento_fecha_inicio"
+                                                                @if (isset($rsInternamiento)) value="{{$rsInternamiento->internamiento_fecha_inicio}}" @endif>
                                                     </div>
+                                                </div>
+                                                <div class="eight wide field internamiento_dias required">
+                                                    <label>Cantidad de dias de internamiento</label>
+                                                    <input id="internamiento_dias" type="number" min="1" name="internamiento_dias"
+                                                           @if (isset($rsInternamiento)) value="{{$rsInternamiento->internamiento_dias}}" @endif>
+                                                </div>
+                                            </div>
+                                            <div class="fields">
+                                                <div class="sixteen wide field internamiento_motivo required">
+                                                    <label>Motivo de Internamiento</label>
+                                                    <textarea rows="2" id="internamiento_motivo" name="internamiento_motivo"
+                                                    >@if (isset($rsInternamiento)) {{$rsInternamiento->internamiento_motivo}}@endif</textarea>
                                                 </div>
                                             </div>
                                         </div>
@@ -79,25 +80,22 @@
                 window.location.href = "{{ url('mascota/historia') }}/"+"{{ $rsMascota->mascota_id }}";
             });
 
-            $('#vacunacion_fecha').flatpickr({
-                maxDate: new Date(),
+            $('#internamiento_fecha_inicio').flatpickr({
+                // maxDate: new Date(),
                 // locale:'es',
                 dateFormat:'d/m/Y'
             });
 
-            $("#vacunacion_vacuna_id").dropdown({
-                fullTextSearch:true
-            });
-
-            $('#vacunacion_save').click(function (e) {
+            $('#internamiento_save').click(function (e) {
                 e.preventDefault();
                 $.ajax({
-                    url: "{{ action('VacunacionController@save') }}",
+                    url: "{{ action('InternamientoController@save') }}",
                     data: {
-                        vacunacion_id: $("#vacunacion_id").val(),
-                        vacunacion_vacuna_id: $("#vacunacion_vacuna_id").val(),
-                        vacunacion_historia_id: $("#vacunacion_historia_id").val(),
-                        vacunacion_fecha: $("#vacunacion_fecha").val(),
+                        internamiento_id: $("#internamiento_id").val(),
+                        internamiento_historia_id: $("#internamiento_historia_id").val(),
+                        internamiento_fecha_inicio: $("#internamiento_fecha_inicio").val(),
+                        internamiento_dias: $("#internamiento_dias").val(),
+                        internamiento_motivo: $("#internamiento_motivo").val(),
                     },
                     type: 'POST',
                     success: function (response) {
@@ -108,12 +106,12 @@
                             msg = data.data;
                             if (msg) {
                                 $.each(msg, function (k, v) {
-                                    $('#vacunacion_ficha_registro .' + k).addClass('error');
+                                    $('#internamiento_ficha_registro .' + k).addClass('error');
                                     if (k == 'detalle') toast('error', 1500, v);
                                 });
                             }
                         } else if (response.status == STATUS_OK) {
-                            toast('success', 3000, 'Vacunacion Guardada');
+                            toast('success', 3000, 'Internamiento Guardado');
                             window.location.href = "{{ url('mascota/historia') }}/"+response.idMascota;
                         }
                     },

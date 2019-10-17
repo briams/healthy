@@ -136,3 +136,20 @@ Route::group(['prefix'=>'vacunacion'],function(){
     Route::post('/save','VacunacionController@save');
     Route::post('/eliminar','VacunacionController@eliminar');
 });
+
+Route::group(['prefix'=>'internamiento'],function(){
+    Route::post('/get-main-list', 'InternamientoController@GetMainList');
+    Route::get('/editar/{idHistoria}/{idInternamiento?}','InternamientoController@edit');
+    Route::post('/save','InternamientoController@save');
+    Route::post('/eliminar','InternamientoController@eliminar');
+});
+
+Route::group(['prefix'=>'tratamiento'],function(){
+    Route::post('/get-main-list', 'TratamientoController@GetMainList');
+    Route::get('/editar/{idHistoria}/{idTratamiento?}','TratamientoController@edit');
+    Route::post('/save','TratamientoController@save');
+    Route::post('/eliminar','TratamientoController@eliminar');
+    Route::post('/get-main-list-detalle', 'TratamientoController@GetMainListDetalle');
+    Route::post('/add-detalle','TratamientoController@addDetalle');
+    Route::post('/remove-detalle','TratamientoController@removeDetalle');
+});

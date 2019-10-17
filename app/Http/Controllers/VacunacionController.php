@@ -24,6 +24,9 @@ class VacunacionController extends Controller
         $rows = Vacunacion::getList($take, $skip,$idHistoria);
 
         foreach ($rows as $row) {
+
+            $row->vacunacion_fecha = (new Carbon($row->vacunacion_fecha))->format('d/m/Y');
+            
             $tool = '
                         <div class="mini ui button left pointing dropdown compact icon circular">
                         <i class="large ellipsis vertical icon"></i>

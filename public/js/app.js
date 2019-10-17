@@ -1,8 +1,6 @@
 const DB_TRUE = 1;
 const DB_FALSE = 0;
 
-// var STATUS_LOGOUT     ='98';
-
 const STATUS_OK = 2;
 const STATUS_FAIL = 1;
 

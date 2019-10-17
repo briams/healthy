@@ -17,7 +17,9 @@
 
     <style>
         #app__container_body {
-            margin-left: 270px;
+            margin-left: 192px;
+            margin-top: 50px !important;
+            /*overflow: hidden !important;*/
         }
     </style>
 </head>
@@ -35,7 +37,7 @@
     </div>
     <!--sidebar-->
     <div class="ui sidebar vertical left menu overlay  borderless visible sidemenu inverted"
-         style="-webkit-transition-duration: 0.1s; transition-duration: 0.1s; margin-top: 48px !important;"
+         style="-webkit-transition-duration: 0.1s; transition-duration: 0.1s; margin-top: 50px !important;"
          data-color="grey">
         <!-- MENU -->
         <div class="ui accordion inverted">
