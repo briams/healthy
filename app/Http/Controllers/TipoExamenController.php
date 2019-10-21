@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\UnidadMedida;
+use App\TipoExamen;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-class UnidadMedidaController extends Controller
+class TipoExamenController extends Controller
 {
     public function index()
     {
-        return view('tipservicio.main');
+        return view('tipexamen.main');
     }
 
     public function GetMainList(Request $request)
@@ -19,8 +18,8 @@ class UnidadMedidaController extends Controller
         $take = $request->input('take');
         $skip = $request->input('skip');
 
-        $countRegs = UnidadMedida::getCountUnidMedida();
-        $rows = UnidadMedida::getList($take, $skip);
+        $countRegs = TipoExamen::getCountTipoExamen();
+        $rows = TipoExamen::getList($take, $skip);
 
         foreach ($rows as $row) {
             $tool = '
@@ -29,14 +28,14 @@ class UnidadMedidaController extends Controller
                         <div class="menu">';
 
             $tool .= '
-		                <div class="item ajxEdit" data-idUnidMed="' . $row->umd_id . '">
+		                <div class="item ajxEdit" data-idTipExamen="' . $row->exament_id . '">
                         <i class="blue edit icon"></i>
 		                Modificar
 		                </div>';
 
             $tool .= '
 		                <div class="ui divider"></div>
-		                <div class="item ajxDelete" data-idUnidMed="' . $row->umd_id . '">
+		                <div class="item ajxDelete" data-idTipExamen="' . $row->exament_id . '">
                         <i class="black trash alternate icon"></i>
 		                Eliminar
 		                </div>';
@@ -49,18 +48,18 @@ class UnidadMedidaController extends Controller
         return response()->json(['status' => STATUS_OK, 'data' => ['data' => $rows, 'count' => $countRegs]]);
     }
 
-    public function edit($idUnidMedida = '')
+    public function edit($idTipoExamen = '')
     {
-        if ($idUnidMedida == '') {
-            return view('unidmedida.unidmedida');
+        if ($idTipoExamen == '') {
+            return view('tipexamen.tipexamen');
         }
 
-        $unidadMedida = UnidadMedida::getUnidMedida($idUnidMedida);
-        if (!$unidadMedida) {
-            return redirect()->action('UnidadMedidaController@index');
+        $tipoExamen = TipoExamen::getTipoExamen($idTipoExamen);
+        if (!$tipoExamen) {
+            return redirect()->action('TipoExamenController@index');
         }
-        return view('unidmedida.unidmedida', [
-            'unidadMedida' => $unidadMedida,
+        return view('tipexamen.tipexamen', [
+            'tipoExamen' => $tipoExamen,
         ]);
     }
 
@@ -68,8 +67,8 @@ class UnidadMedidaController extends Controller
     {
         $error = [];
         $validator = Validator::make($request->all(), [
-            'umd_codigo' => 'required',
-            'umd_descripcion' => 'required',
+            'exament_nombre' => 'required',
+            'exament_descripcion' => 'required',
         ]);
         foreach ($validator->errors()->getMessages() as $key => $message) {
             $error[$key] = $message[0];
@@ -80,12 +79,12 @@ class UnidadMedidaController extends Controller
             return response()->json($res);
         }
 
-        if (!$request->filled('umd_id')) {
-            $unidMedida = UnidadMedida::create($request->all());
-            return response()->json(['status' => STATUS_OK, 'id' => $unidMedida->umd_id]);
+        if (!$request->filled('exament_id')) {
+            $tipoExamen = TipoExamen::create($request->all());
+            return response()->json(['status' => STATUS_OK, 'id' => $tipoExamen->exament_id]);
         }
-        $unidMedida = UnidadMedida::updateRow($request);
-        return response()->json(['status' => STATUS_OK, 'id' => $unidMedida->umd_id]);
+        $tipoExamen = TipoExamen::updateRow($request);
+        return response()->json(['status' => STATUS_OK, 'id' => $tipoExamen->exament_id]);
     }
 
     public function eliminar(Request $request)
@@ -93,7 +92,7 @@ class UnidadMedidaController extends Controller
         if (!$request->filled('id')) {
             return response()->json(['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada']);
         }
-        UnidadMedida::deleteUnidMedida($request->input('id'));
+        TipoExamen::deleteTipoExamen($request->input('id'));
         return response()->json(['status' => STATUS_OK]);
     }
 }

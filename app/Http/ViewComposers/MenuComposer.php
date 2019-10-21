@@ -21,6 +21,9 @@ class MenuComposer
 //        $view->with('modulos',$itemsPadres);
 
         $perfilId = Session::get('usuario')['usuario_perfil_id'];
+//        if($perfilId == ''){
+//            return redirect()->intended('/');
+//        }
         $modulesPadres = Modulo::getListModuleParent();
 
         $itemsPadres = [];

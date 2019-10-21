@@ -48,6 +48,14 @@ class Mascota extends Model
             ->get();
     }
 
+    public static function getListMascotaXCliente($idCliente)
+    {
+        return Mascota::where('mascota_estado', '!=', ST_ELIMINADO)
+            ->where('mascota_cliente_id', '=', $idCliente)
+            ->orderBy('mascota_id', 'desc')
+            ->get();
+    }
+
     public static function getMascota($idMascota)
     {
         return Mascota::where('mascota_id', '=', $idMascota)

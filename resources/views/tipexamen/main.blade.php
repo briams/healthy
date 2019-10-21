@@ -4,7 +4,7 @@
     <div class="navslide navwrap" id="app_content_toolbar">
         <div class="ui menu icon borderless grid" data-color="inverted white">
             <div class="item ui colhidden">
-                <button id="new_user" class="ui button compact"><i class="icon plus"></i>Nuevo Usuario
+                <button id="new_tipexamen" class="ui button compact"><i class="icon plus"></i>Nuevo Tipo Examen
                 </button>
             </div>
             {{--<div class="item right ui colhidden">--}}
@@ -28,9 +28,9 @@
             transport: {
                 read: function (options) {
                     // options.data.q = function () {
-                    //     return $("#search_cliente").val();
+                        // return $("#search_cliente").val();
                     // };
-                    dataSourceBinding(options, "{{ url('usuarios/get-main-list') }}")
+                    dataSourceBinding(options, "{{ url('tipo-examen/get-main-list') }}")
                 }
             },
             serverFiltering: true,
@@ -43,7 +43,7 @@
                 total: 'count',
                 model: {
 
-                    id: "idUsuario"
+                    id: "exament_id"
                 }
             }
         });
@@ -67,11 +67,8 @@
                     attributes: {"class": "grid__cell_tool_menu"}
                 },
 
-                {field: "&nbsp;", title: 'ESTADO', width: "60px", template: "#= estado #"},
-                {field: "nombre", title: 'NOMBRE', width: '80px'},
-                {field: "email", title: 'USUARIO', width: '120px'},
-                {field: "tipo", title: 'TIPO', width: '120px'},
-                {field: "perfil_nombre", title: 'PERFIL', width: '120px'},
+                {field: "exament_nombre", title: 'NOMBRE', width: '80px'},
+                {field: "exament_descripcion", title: 'DESCRIPCION', width: '80px'},
 
             ],
 
@@ -84,68 +81,22 @@
 
                 $('.ajxEdit').click(function(e){
                     e.preventDefault();
-                    var id = $(this).attr('data-idUser');
-                    window.location.href="{{ url('usuarios/editar') }}/"+id;
-                });
-
-                $('.ajxDown').click(function(e){
-                    e.preventDefault();
-                    var id = $(this).attr('data-idUser');
-                    $.ajax({
-                        url : "{{ action('UsuarioController@bloquear') }}",
-                        data : { id : id },
-                        type : 'POST',
-                        success : function(response){
-                            if (response.status == STATUS_FAIL) {
-                                toast('error', 1500, data.msg );
-                            }else if (response.status == STATUS_OK) {
-                                toast('success',3000,'Usuario Bloqueado');
-                                mainDataSource.read();
-                            }
-                        },
-                        statusCode : {
-                            404 : function(){
-                                alert('Web not found');
-                            }
-                        }
-                    });
-                });
-
-                $('.ajxUp').click(function(e){
-                    e.preventDefault();
-                    var id = $(this).attr('data-idUser');
-                    $.ajax({
-                        url : "{{ action('UsuarioController@activar') }}",
-                        data : { id : id },
-                        type : 'POST',
-                        success : function(response){
-                            if (response.status == STATUS_FAIL) {
-                                toast('error', 1500, data.msg );
-                            }else if (response.status == STATUS_OK) {
-                                toast('success',3000,'Usuario Activado');
-                                mainDataSource.read();
-                            }
-                        },
-                        statusCode : {
-                            404 : function(){
-                                alert('Web not found');
-                            }
-                        }
-                    });
+                    var id = $(this).attr('data-idTipExamen');
+                    window.location.href="{{ url('tipo-examen/editar') }}/"+id;
                 });
 
                 $('.ajxDelete').click(function(e){
                     e.preventDefault();
-                    var id = $(this).attr('data-idUser');
+                    var id = $(this).attr('data-idTipExamen');
                     $.ajax({
-                        url : "{{ action('UsuarioController@eliminar') }}",
+                        url : "{{ action('TipoExamenController@eliminar') }}",
                         data : { id : id },
                         type : 'POST',
                         success : function(response){
                             if (response.status == STATUS_FAIL) {
                                 toast('error', 1500, data.msg );
                             }else if (response.status == STATUS_OK) {
-                                toast('success',3000,'Usuario Eliminado');
+                                toast('success',3000,'Tipo Examen Eliminado');
                                 mainDataSource.read();
                             }
                         },
@@ -165,8 +116,8 @@
         $(document).ready(function () {
             mainDataSource.read();
 
-            $('#new_user').click(function (e) {
-                window.location.href = "{{ url('usuarios/editar') }}";
+            $('#new_tipexamen').click(function (e) {
+                window.location.href = "{{ url('tipo-examen/editar') }}";
             });
 
             // $("#search_cliente").keyup(function(e){

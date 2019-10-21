@@ -24,8 +24,7 @@
                     <a class="active item" data-tab="first">Historia</a>
                     @if (isset($rsHistoria))
                     <a class=" item" data-tab="second">Vacunacion</a>
-
-                    {{--<a class=" item" data-tab="third">Servicio Estetico</a>--}}
+                    <a class=" item" data-tab="third">Servicios</a>
                     <a class=" item" data-tab="fourth">Tratamiento</a>
                     <a class=" item" data-tab="fifth">Internamiento</a>
                     {{--<a class=" item" data-tab="sixth">Receta</a>--}}
@@ -147,6 +146,40 @@
                                             <div class="fields">
                                                 <div class="sixteen wide field ">
                                                     <div id="grid"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="ui bottom attached tab segment" data-tab="third">
+                    <form action="" method="post" id="servicio_ficha"
+                          class="ui form">
+                        {{ csrf_field() }}
+                        <div class="ui form">
+                            <div class="fields">
+                                <div class="sixteen wide field">
+                                    <div class="ui fluid card">
+                                        <div class="content">
+
+                                            <input type="hidden" name="servicio_historia_id" id="servicio_historia_id"
+                                                   @if (isset($rsHistoria)) value="{{$rsHistoria->historia_id}}" @endif >
+
+                                            <div class="fields">
+                                                {{--<div class="item ui colhidden">--}}
+                                                {{--</div>--}}
+                                                <div class="four wide field ">
+                                                    <button id="new_servicio" class="ui button compact"><i class="icon plus"></i>Nuevo Servicio
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="fields">
+                                                <div class="sixteen wide field ">
+                                                    <div id="grid_servicio"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -575,6 +608,102 @@
             }).data("kendoGrid");
 
             mainDataSource3.read();
+
+            $('#new_servicio').click(function (e) {
+                e.preventDefault();
+                var idHistoria = $("#servicio_historia_id").val();
+                window.location.href = "{{ url('servicio/editar') }}/" + idHistoria;
+            });
+
+            var mainDataSource4 = new kendo.data.DataSource({
+                transport: {
+                    read: function (options) {
+                        options.data.servicio_historia_id = $("#servicio_historia_id").val();
+                        dataSourceBinding(options, "{{ url('servicio/get-main-list') }}")
+                    }
+                },
+                serverFiltering: true,
+                serverSorting: true,
+                serverPaging: true,
+                autoSync: true,
+                pageSize: 20,
+                schema: {
+                    data: 'data',
+                    total: 'count',
+                    model: {
+
+                        id: "servicio_id"
+                    }
+                }
+            });
+
+            var grid = $("#grid_servicio").kendoGrid({
+                dataSource: mainDataSource4,
+                pageable: {
+                    refresh: true,
+                    buttonCount: 5,
+                    messages: {
+                        display: "Listando {0}-{1} de {2} registros"
+                    }
+                },
+                autoBind: false,
+                columns: [
+                    {
+                        field: "&nbsp;",
+                        width: 50,
+                        template: "#= tool #",
+                        sortable: false,
+                        attributes: {"class": "grid__cell_tool_menu"}
+                    },
+
+                    // {field: "&nbsp;", title: 'ESTADO', width: "60px", template: "#= estado #"},
+                    {field: "servicio_servtip_id", title: 'TIPO SERVICIO', width: '80px'},
+                    {field: "servicio_fecha", title: 'FECHA', width: '80px'},
+                    {field: "servicio_observacion", title: 'OBSERVACION', width: '80px'},
+
+                ],
+
+                sortable: true,
+                dataBound: function (sender, args) {
+
+                    $('#grid_servicio .ui.dropdown').dropdown({
+                        context: '#grid_servicio .k-grid-content'
+                    });
+
+                    $('.ajxEdit').click(function(e){
+                        e.preventDefault();
+                        var id = $(this).attr('data-idServicio');
+                        var idHistoria = $("#servicio_historia_id").val();
+                        window.location.href="{{ url('servicio/editar') }}/"+ idHistoria+'/'+id;
+                    });
+
+                    $('.ajxDelete').click(function(e){
+                        e.preventDefault();
+                        var id = $(this).attr('data-idServicio');
+                        $.ajax({
+                            url : "{{ action('ServicioController@eliminar') }}",
+                            data : { id : id },
+                            type : 'POST',
+                            success : function(response){
+                                if (response.status == STATUS_FAIL) {
+                                    toast('error', 1500, response.msg );
+                                }else if (response.status == STATUS_OK) {
+                                    toast('success',3000,'Registro Eliminado');
+                                    mainDataSource.read();
+                                }
+                            },
+                            statusCode : {
+                                404 : function(){
+                                    alert('Web not found');
+                                }
+                            }
+                        });
+                    });
+                }
+
+            }).data("kendoGrid");
+
+            mainDataSource4.read();
 
         });
 

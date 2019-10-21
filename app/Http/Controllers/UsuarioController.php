@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Cliente;
 use App\Perfil;
+use App\Personal;
 use App\Rules\Emailvalidation;
 use App\Usuario;
 use Illuminate\Http\Request;
@@ -27,6 +29,17 @@ class UsuarioController extends Controller
         $rows = Usuario::getList($take, $skip);
 
         foreach ($rows as $row) {
+            if($row->tipo == TIPO_PERSONAL){
+                $row->nombre = $row->personal_nombre;
+                $row->tipo = 'Personal';
+            }elseif ($row->tipo == TIPO_CLIENTE){
+                $row->nombre = $row->cliente_fullname;
+                $row->tipo = 'Cliente';
+            }elseif ($row->tipo == TIPO_SISTEMA){
+                $row->tipo = 'Sistema';
+                $row->nombre = 'User de Sistema';
+            }
+
             $tool = '
                         <div class="mini ui button left pointing dropdown compact icon circular">
                         <i class="large ellipsis vertical icon"></i>
@@ -84,15 +97,29 @@ class UsuarioController extends Controller
         if ($idUser == '') {
             return view('usuarios.usuario', [
                 'perfiles' => $perfiles,
+                'tipo' => TIPO_SISTEMA,
+                'strtipo' => TIPO_USUARIO[TIPO_SISTEMA],
             ]);
         }
         $user = Usuario::getUSer($idUser);
         if (!$user) {
             return redirect()->action('UsuarioController@index');
         }
+        if($user->tipo == TIPO_PERSONAL){
+            $personal = Personal::getPersonal($user->referencia);
+            $nombre = $personal->personal_apellido.', '.$personal->personal_nombre;
+        }elseif ($user->tipo == TIPO_CLIENTE){
+            $cliente = Cliente::getCliente($user->referencia);
+            $nombre = $cliente->cliente_fullname;
+        }elseif ($user->tipo == TIPO_SISTEMA){
+            $nombre = 'User de Sistema';
+        }
         return view('usuarios.usuario', [
             'user' => $user,
             'perfiles' => $perfiles,
+            'tipo' => $user->tipo,
+            'strtipo' => TIPO_USUARIO[$user->tipo],
+            'nombre' => $nombre,
         ]);
     }
 
@@ -100,9 +127,7 @@ class UsuarioController extends Controller
     {
         $error = [];
         $validator = Validator::make($request->all(), [
-            'nombre' => 'required',
-            'apellido' => 'required',
-            'numero_doc' => 'required',
+            'tipo' => 'required',
             'email' => ['required', new Emailvalidation],
             'usuario_perfil_id' => 'required',
         ]);
@@ -121,6 +146,9 @@ class UsuarioController extends Controller
         if (!$request->filled('password')) {
             $request->request->remove('password');
         } else {
+            if ($request->input('password') != $request->input('password_validate') ) {
+                return response()->json(['status' => STATUS_FAIL, 'data' => $error, 'msg' => 'Verifique que las dos contraseñas ingresadas sean iguales']);
+            }
             $request->merge(['password' => Hash::make($request->input('password'))]);
         }
 

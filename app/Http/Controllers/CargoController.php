@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\UnidadMedida;
+use App\Cargo;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-class UnidadMedidaController extends Controller
+class CargoController extends Controller
 {
     public function index()
     {
-        return view('tipservicio.main');
+        return view('cargo.main');
     }
 
     public function GetMainList(Request $request)
@@ -19,8 +18,8 @@ class UnidadMedidaController extends Controller
         $take = $request->input('take');
         $skip = $request->input('skip');
 
-        $countRegs = UnidadMedida::getCountUnidMedida();
-        $rows = UnidadMedida::getList($take, $skip);
+        $countRegs = Cargo::getCountCargo();
+        $rows = Cargo::getList($take, $skip);
 
         foreach ($rows as $row) {
             $tool = '
@@ -29,14 +28,14 @@ class UnidadMedidaController extends Controller
                         <div class="menu">';
 
             $tool .= '
-		                <div class="item ajxEdit" data-idUnidMed="' . $row->umd_id . '">
+		                <div class="item ajxEdit" data-idCargo="' . $row->cargo_id . '">
                         <i class="blue edit icon"></i>
 		                Modificar
 		                </div>';
 
             $tool .= '
 		                <div class="ui divider"></div>
-		                <div class="item ajxDelete" data-idUnidMed="' . $row->umd_id . '">
+		                <div class="item ajxDelete" data-idCargo="' . $row->cargo_id . '">
                         <i class="black trash alternate icon"></i>
 		                Eliminar
 		                </div>';
@@ -49,18 +48,18 @@ class UnidadMedidaController extends Controller
         return response()->json(['status' => STATUS_OK, 'data' => ['data' => $rows, 'count' => $countRegs]]);
     }
 
-    public function edit($idUnidMedida = '')
+    public function edit($idCargo = '')
     {
-        if ($idUnidMedida == '') {
-            return view('unidmedida.unidmedida');
+        if ($idCargo == '') {
+            return view('cargo.cargo');
         }
 
-        $unidadMedida = UnidadMedida::getUnidMedida($idUnidMedida);
-        if (!$unidadMedida) {
-            return redirect()->action('UnidadMedidaController@index');
+        $rsCargo = Cargo::getCargo($idCargo);
+        if (!$rsCargo) {
+            return redirect()->action('CargoController@index');
         }
-        return view('unidmedida.unidmedida', [
-            'unidadMedida' => $unidadMedida,
+        return view('cargo.cargo', [
+            'rsCargo' => $rsCargo,
         ]);
     }
 
@@ -68,8 +67,8 @@ class UnidadMedidaController extends Controller
     {
         $error = [];
         $validator = Validator::make($request->all(), [
-            'umd_codigo' => 'required',
-            'umd_descripcion' => 'required',
+            'cargo_nombre' => 'required',
+            'cargo_descripcion' => 'required',
         ]);
         foreach ($validator->errors()->getMessages() as $key => $message) {
             $error[$key] = $message[0];
@@ -80,12 +79,12 @@ class UnidadMedidaController extends Controller
             return response()->json($res);
         }
 
-        if (!$request->filled('umd_id')) {
-            $unidMedida = UnidadMedida::create($request->all());
-            return response()->json(['status' => STATUS_OK, 'id' => $unidMedida->umd_id]);
+        if (!$request->filled('cargo_id')) {
+            $cargo = Cargo::create($request->all());
+            return response()->json(['status' => STATUS_OK, 'id' => $cargo->cargo_id]);
         }
-        $unidMedida = UnidadMedida::updateRow($request);
-        return response()->json(['status' => STATUS_OK, 'id' => $unidMedida->umd_id]);
+        $cargo = Cargo::updateRow($request);
+        return response()->json(['status' => STATUS_OK, 'id' => $cargo->cargo_id]);
     }
 
     public function eliminar(Request $request)
@@ -93,7 +92,7 @@ class UnidadMedidaController extends Controller
         if (!$request->filled('id')) {
             return response()->json(['status' => STATUS_FAIL, 'msg' => 'Error datos de entrada']);
         }
-        UnidadMedida::deleteUnidMedida($request->input('id'));
+        Cargo::deleteCargo($request->input('id'));
         return response()->json(['status' => STATUS_OK]);
     }
 }

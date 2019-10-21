@@ -4,7 +4,7 @@
     <div class="navslide navwrap" id="app_content_toolbar">
         <div class="ui menu icon borderless grid" data-color="inverted white">
             <div class="item ui colhidden">
-                <button id="new_user" class="ui button compact"><i class="icon plus"></i>Nuevo Usuario
+                <button id="new_personal" class="ui button compact"><i class="icon plus"></i>Nuevo Personal
                 </button>
             </div>
             {{--<div class="item right ui colhidden">--}}
@@ -30,7 +30,7 @@
                     // options.data.q = function () {
                     //     return $("#search_cliente").val();
                     // };
-                    dataSourceBinding(options, "{{ url('usuarios/get-main-list') }}")
+                    dataSourceBinding(options, "{{ url('personal/get-main-list') }}")
                 }
             },
             serverFiltering: true,
@@ -68,10 +68,12 @@
                 },
 
                 {field: "&nbsp;", title: 'ESTADO', width: "60px", template: "#= estado #"},
-                {field: "nombre", title: 'NOMBRE', width: '80px'},
-                {field: "email", title: 'USUARIO', width: '120px'},
-                {field: "tipo", title: 'TIPO', width: '120px'},
-                {field: "perfil_nombre", title: 'PERFIL', width: '120px'},
+                {field: "personal_nombre", title: 'NOMBRE', width: '80px'},
+                {field: "personal_apellido", title: 'APELLIDO', width: '120px'},
+                {field: "personal_dni", title: 'DNI', width: '120px'},
+                {field: "personal_email", title: 'EMAIL', width: '120px'},
+                {field: "personal_telefono", title: 'TELEFONO', width: '120px'},
+                {field: "cargo_nombre", title: 'CARGO', width: '120px'},
 
             ],
 
@@ -84,22 +86,22 @@
 
                 $('.ajxEdit').click(function(e){
                     e.preventDefault();
-                    var id = $(this).attr('data-idUser');
-                    window.location.href="{{ url('usuarios/editar') }}/"+id;
+                    var id = $(this).attr('data-idPersonal');
+                    window.location.href="{{ url('personal/editar') }}/"+id;
                 });
 
                 $('.ajxDown').click(function(e){
                     e.preventDefault();
-                    var id = $(this).attr('data-idUser');
+                    var id = $(this).attr('data-idPersonal');
                     $.ajax({
-                        url : "{{ action('UsuarioController@bloquear') }}",
+                        url : "{{ action('PersonalController@bloquear') }}",
                         data : { id : id },
                         type : 'POST',
                         success : function(response){
                             if (response.status == STATUS_FAIL) {
                                 toast('error', 1500, data.msg );
                             }else if (response.status == STATUS_OK) {
-                                toast('success',3000,'Usuario Bloqueado');
+                                toast('success',3000,'Personal Bloqueado');
                                 mainDataSource.read();
                             }
                         },
@@ -113,16 +115,16 @@
 
                 $('.ajxUp').click(function(e){
                     e.preventDefault();
-                    var id = $(this).attr('data-idUser');
+                    var id = $(this).attr('data-idPersonal');
                     $.ajax({
-                        url : "{{ action('UsuarioController@activar') }}",
+                        url : "{{ action('PersonalController@activar') }}",
                         data : { id : id },
                         type : 'POST',
                         success : function(response){
                             if (response.status == STATUS_FAIL) {
                                 toast('error', 1500, data.msg );
                             }else if (response.status == STATUS_OK) {
-                                toast('success',3000,'Usuario Activado');
+                                toast('success',3000,'Personal Activado');
                                 mainDataSource.read();
                             }
                         },
@@ -136,16 +138,39 @@
 
                 $('.ajxDelete').click(function(e){
                     e.preventDefault();
-                    var id = $(this).attr('data-idUser');
+                    var id = $(this).attr('data-idPersonal');
                     $.ajax({
-                        url : "{{ action('UsuarioController@eliminar') }}",
+                        url : "{{ action('PersonalController@eliminar') }}",
                         data : { id : id },
                         type : 'POST',
                         success : function(response){
                             if (response.status == STATUS_FAIL) {
                                 toast('error', 1500, data.msg );
                             }else if (response.status == STATUS_OK) {
-                                toast('success',3000,'Usuario Eliminado');
+                                toast('success',3000,'Personal Eliminado');
+                                mainDataSource.read();
+                            }
+                        },
+                        statusCode : {
+                            404 : function(){
+                                alert('Web not found');
+                            }
+                        }
+                    });
+                });
+
+                $('.ajxGenerate').click(function(e){
+                    e.preventDefault();
+                    var id = $(this).attr('data-idPersonal');
+                    $.ajax({
+                        url : "{{ action('PersonalController@generarUsuario') }}",
+                        data : { id : id },
+                        type : 'POST',
+                        success : function(response){
+                            if (response.status == STATUS_FAIL) {
+                                toast('error', 1500, response.msg );
+                            }else if (response.status == STATUS_OK) {
+                                toast('success',3000,'Usuario Generado');
                                 mainDataSource.read();
                             }
                         },
@@ -165,8 +190,8 @@
         $(document).ready(function () {
             mainDataSource.read();
 
-            $('#new_user').click(function (e) {
-                window.location.href = "{{ url('usuarios/editar') }}";
+            $('#new_personal').click(function (e) {
+                window.location.href = "{{ url('personal/editar') }}";
             });
 
             // $("#search_cliente").keyup(function(e){

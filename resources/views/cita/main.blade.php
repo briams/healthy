@@ -4,7 +4,7 @@
     <div class="navslide navwrap" id="app_content_toolbar">
         <div class="ui menu icon borderless grid" data-color="inverted white">
             <div class="item ui colhidden">
-                <button id="new_user" class="ui button compact"><i class="icon plus"></i>Nuevo Usuario
+                <button id="new_cita" class="ui button compact"><i class="icon plus"></i>Nueva Cita
                 </button>
             </div>
             {{--<div class="item right ui colhidden">--}}
@@ -28,9 +28,9 @@
             transport: {
                 read: function (options) {
                     // options.data.q = function () {
-                    //     return $("#search_cliente").val();
+                        // return $("#search_cliente").val();
                     // };
-                    dataSourceBinding(options, "{{ url('usuarios/get-main-list') }}")
+                    dataSourceBinding(options, "{{ url('cita/get-main-list') }}")
                 }
             },
             serverFiltering: true,
@@ -43,7 +43,7 @@
                 total: 'count',
                 model: {
 
-                    id: "idUsuario"
+                    id: "cita_id"
                 }
             }
         });
@@ -68,10 +68,10 @@
                 },
 
                 {field: "&nbsp;", title: 'ESTADO', width: "60px", template: "#= estado #"},
-                {field: "nombre", title: 'NOMBRE', width: '80px'},
-                {field: "email", title: 'USUARIO', width: '120px'},
-                {field: "tipo", title: 'TIPO', width: '120px'},
-                {field: "perfil_nombre", title: 'PERFIL', width: '120px'},
+                {field: "cita_cliente_id", title: 'CLIENTE', width: '80px'},
+                {field: "cita_mascota_id", title: 'MASCOTA', width: '80px'},
+                {field: "cita_fecha", title: 'FECHA', width: '80px'},
+                {field: "cita_motivo", title: 'MOTIVO', width: '80px'},
 
             ],
 
@@ -84,22 +84,22 @@
 
                 $('.ajxEdit').click(function(e){
                     e.preventDefault();
-                    var id = $(this).attr('data-idUser');
-                    window.location.href="{{ url('usuarios/editar') }}/"+id;
+                    var id = $(this).attr('data-idCita');
+                    window.location.href="{{ url('cita/editar') }}/"+id;
                 });
 
                 $('.ajxDown').click(function(e){
                     e.preventDefault();
-                    var id = $(this).attr('data-idUser');
+                    var id = $(this).attr('data-idCita');
                     $.ajax({
-                        url : "{{ action('UsuarioController@bloquear') }}",
+                        url : "{{ action('CitaController@bloquear') }}",
                         data : { id : id },
                         type : 'POST',
                         success : function(response){
                             if (response.status == STATUS_FAIL) {
                                 toast('error', 1500, data.msg );
                             }else if (response.status == STATUS_OK) {
-                                toast('success',3000,'Usuario Bloqueado');
+                                toast('success',3000,'cita Bloqueada');
                                 mainDataSource.read();
                             }
                         },
@@ -113,16 +113,16 @@
 
                 $('.ajxUp').click(function(e){
                     e.preventDefault();
-                    var id = $(this).attr('data-idUser');
+                    var id = $(this).attr('data-idCita');
                     $.ajax({
-                        url : "{{ action('UsuarioController@activar') }}",
+                        url : "{{ action('CitaController@activar') }}",
                         data : { id : id },
                         type : 'POST',
                         success : function(response){
                             if (response.status == STATUS_FAIL) {
                                 toast('error', 1500, data.msg );
                             }else if (response.status == STATUS_OK) {
-                                toast('success',3000,'Usuario Activado');
+                                toast('success',3000,'cita Activada');
                                 mainDataSource.read();
                             }
                         },
@@ -136,16 +136,16 @@
 
                 $('.ajxDelete').click(function(e){
                     e.preventDefault();
-                    var id = $(this).attr('data-idUser');
+                    var id = $(this).attr('data-idCita');
                     $.ajax({
-                        url : "{{ action('UsuarioController@eliminar') }}",
+                        url : "{{ action('CitaController@eliminar') }}",
                         data : { id : id },
                         type : 'POST',
                         success : function(response){
                             if (response.status == STATUS_FAIL) {
                                 toast('error', 1500, data.msg );
                             }else if (response.status == STATUS_OK) {
-                                toast('success',3000,'Usuario Eliminado');
+                                toast('success',3000,'cita Eliminada');
                                 mainDataSource.read();
                             }
                         },
@@ -165,8 +165,8 @@
         $(document).ready(function () {
             mainDataSource.read();
 
-            $('#new_user').click(function (e) {
-                window.location.href = "{{ url('usuarios/editar') }}";
+            $('#new_cita').click(function (e) {
+                window.location.href = "{{ url('cita/editar') }}";
             });
 
             // $("#search_cliente").keyup(function(e){

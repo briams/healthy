@@ -13,11 +13,9 @@
                     <i class="icon save"></i>Guardar
                 </button>
             </div>
-      {{--      {% if registro != '' %}
             <div class="item ui colhidden">
-                <h3 style="text-transform: uppercase;">{{registro.fv_documento}} | {{registro.fv_full_name}}</h3>
+                <h3 style="text-transform: uppercase;">@if (isset($nombre)) {{ $nombre }} @endif @if (isset($strtipo)) | {{ $strtipo }} @endif</h3>
             </div>
-            {% endif %}--}}
         </div>
     </div>
     <div class="mainWrap navslide">
@@ -38,28 +36,11 @@
                                         {{--</div>--}}
                                         <div class="content">
                                             <input type="hidden" name="idUsuario" id="idUsuario"  @if (isset($user)) value="{{$user->idUsuario}}" @endif>
-                                            <div class="fields">
-                                                <div class="six wide field required nombre">
-                                                    <label>Nombre</label>
-                                                    <input type="text" name="nombre" id="nombre" placeholder="Nombre"  @if (isset($user)) value="{{$user->nombre}}" @endif>
-                                                </div>
-                                                <div class="six wide field required apellido">
-                                                    <label>Apellido</label>
-                                                    <input type="text" name="apellido" id="apellido" placeholder="Apellido"  @if (isset($user)) value="{{$user->apellido}}" @endif>
-                                                </div>
-                                                <div class="six wide field required numero_doc">
-                                                    <label>NroDoc</label>
-                                                    <input type="text" name="numero_doc" id="numero_doc" placeholder="NroDoc"  @if (isset($user)) value="{{$user->numero_doc}}" @endif>
-                                                </div>
-                                            </div>
+                                            <input type="hidden" name="tipo" id="tipo"  @if (isset($tipo)) value="{{$tipo}}" @endif>
                                             <div class="fields">
                                                 <div class="six wide field required email">
                                                     <label>E-mail</label>
                                                     <input type="email" name="email" id="email" placeholder="Email" @if (isset($user)) value="{{$user->email}}" @endif>
-                                                </div>
-                                                <div class="six wide field required telefono">
-                                                    <label>Telefono</label>
-                                                    <input type="text" name="telefono" id="telefono" placeholder="Telefono" @if (isset($user)) value="{{$user->telefono}}" @endif>
                                                 </div>
                                                 <div class="six wide field usuario_perfil_id" >
                                                     @if (count($perfiles) > 0)
@@ -75,8 +56,12 @@
                                             </div>
                                             <div class="fields">
                                                 <div class="six wide field required password">
-                                                    <label>Password</label>
-                                                    <input type="password" name="password" id="password" placeholder="Password" >
+                                                    <label>New Password</label>
+                                                    <input type="password" name="password" id="password" placeholder="New Password" >
+                                                </div>
+                                                <div class="six wide field required password_validate">
+                                                    <label>Duplicate New Password</label>
+                                                    <input type="password" name="password_validate" id="password_validate" placeholder="Duplicate New Password" >
                                                 </div>
                                             </div>
                                         </div>
@@ -109,13 +94,11 @@
                     url : "{{ action('UsuarioController@save') }}",
                     data : {
                         idUsuario : $("#idUsuario").val(),
-                        nombre : $("#nombre").val(),
-                        apellido : $("#apellido").val(),
-                        numero_doc : $("#numero_doc").val(),
+                        tipo : $("#tipo").val(),
                         email : $("#email").val(),
-                        telefono : $("#telefono").val(),
                         usuario_perfil_id : $("#usuario_perfil_id").val(),
                         password : $("#password").val(),
+                        password_validate : $("#password_validate").val(),
                     },
                     type : 'POST',
                     success : function(response){

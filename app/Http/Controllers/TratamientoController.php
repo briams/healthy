@@ -28,6 +28,12 @@ class TratamientoController extends Controller
 
             $row->tratamiento_fecha_registro = (new Carbon($row->tratamiento_fecha_registro))->format('d/m/Y');
 
+            if($row->tratamiento_tipo == 1) {
+                $row->tratamiento_tipo = 'Tratamiento interno';
+            }elseif ($row->tratamiento_tipo == 2){
+                $row->tratamiento_tipo = 'Receta';
+            }
+
             $tool = '
                         <div class="mini ui button left pointing dropdown compact icon circular">
                         <i class="large ellipsis vertical icon"></i>
@@ -163,12 +169,12 @@ class TratamientoController extends Controller
                 $eliminar = '<div class="ui button medium red circular ajxDelete inverted icon" data-idProducto="' . $producto->tratamientod_producto_id . '"><i class="icon trash alternate"></i></div>';
 
                 $array['eliminar'] = $eliminar;
+                $rsProducto = Producto::getProducto($producto->tratamientod_producto_id);
+                $array['tratamientod_producto_id'] = $rsProducto->pro_nombre;
 
-                $array['tratamientod_producto_id'] = $producto->tratamientod_producto_id;
+                $array['tratamientod_frecuencia'] = $producto->tratamientod_frecuencia . ' horas';
 
-                $array['tratamientod_frecuencia'] = $producto->tratamientod_frecuencia;
-
-                $array['tratamientod_duracion'] = $producto->tratamientod_duracion;
+                $array['tratamientod_duracion'] = $producto->tratamientod_duracion. ' dias';
 
                 $array['tratamientod_dosis'] = $producto->tratamientod_dosis;
 

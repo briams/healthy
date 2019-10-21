@@ -12,15 +12,12 @@ class Usuario extends Model
     public $timestamps = false;
     protected $fillable = [
         'idUsuario',
-        'nombre',
-        'apellido',
-        'numero_doc',
-        'email',
-        'telefono',
-        'usuario_perfil_id',
-        'usuario',
         'email',
         'password',
+        'fecha_registro',
+        'usuario_perfil_id',
+        'referencia',
+        'tipo',
         'estado',
     ];
 
@@ -53,7 +50,10 @@ class Usuario extends Model
 
     private static function getClone()
     {
-        return Usuario::where('estado', '!=', ST_ELIMINADO);
+        return Usuario::where('estado', '!=', ST_ELIMINADO)
+            ->leftJoin('tbl_personal', 'tbl_usuario.referencia', '=', 'tbl_personal.personal_id')
+            ->leftJoin('tbl_cliente', 'tbl_usuario.referencia', '=', 'tbl_cliente.cliente_id')
+            ->leftJoin('tbl_perfil', 'tbl_usuario.usuario_perfil_id', '=', 'tbl_perfil.perfil_id');
     }
 
     /**
