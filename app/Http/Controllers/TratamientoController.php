@@ -29,7 +29,7 @@ class TratamientoController extends Controller
             $row->tratamiento_fecha_registro = (new Carbon($row->tratamiento_fecha_registro))->format('d/m/Y');
 
             if($row->tratamiento_tipo == 1) {
-                $row->tratamiento_tipo = 'Tratamiento interno';
+                $row->tratamiento_tipo = 'tratamiento interno';
             }elseif ($row->tratamiento_tipo == 2){
                 $row->tratamiento_tipo = 'Receta';
             }
@@ -85,6 +85,7 @@ class TratamientoController extends Controller
                 'tratamientod_frecuencia'       => $row->tratamientod_frecuencia,
                 'tratamientod_duracion'     => $row->tratamientod_duracion,
                 'tratamientod_dosis'        => $row->tratamientod_dosis,
+                'tratamientod_cantidad'        => $row->tratamientod_cantidad,
             ];
         }
         Session::put('listProductos', $arrayListP);
@@ -178,6 +179,8 @@ class TratamientoController extends Controller
 
                 $array['tratamientod_dosis'] = $producto->tratamientod_dosis;
 
+                $array['tratamientod_cantidad'] = $producto->tratamientod_cantidad;
+
                 $arrayProductos[] = (object)$array;
             }
         }
@@ -231,6 +234,4 @@ class TratamientoController extends Controller
         Session::put('listProductos', $productos);
         return response()->json(['status' => STATUS_OK]);
     }
-
-
 }

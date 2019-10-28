@@ -15,22 +15,22 @@ Route::post('/login', 'MainController@login')->name('login');
 Route::post('/logout', 'MainController@logout')->name('logout');
 
 Route::group(['prefix'=>'module'],function(){
-    Route::get('/', 'ModuleController@index');
-    Route::post('/get-main-list', 'ModuleController@GetMainList')->name('get-list');
-    Route::get('/editar/{idModulo?}','ModuleController@edit');
-    Route::post('/save','ModuleController@save');
-    Route::post('/bloquear','ModuleController@bloquear');
-    Route::post('/activar','ModuleController@activar');
+    Route::get('/', 'ModuleController@index')->middleware('validateSession');
+    Route::post('/get-main-list', 'ModuleController@GetMainList')->middleware('validateSession');
+    Route::get('/editar/{idModulo?}','ModuleController@edit')->middleware('validateSession');
+    Route::post('/save','ModuleController@save')->middleware('validateSession');
+    Route::post('/bloquear','ModuleController@bloquear')->middleware('validateSession');
+    Route::post('/activar','ModuleController@activar')->middleware('validateSession');
 });
 
 Route::group(['prefix'=>'perfil'],function(){
-    Route::get('/', 'PerfilController@index');
-    Route::post('/get-main-list', 'PerfilController@GetMainList');
-    Route::get('/editar/{idPerfil?}','PerfilController@edit');
-    Route::post('/save','PerfilController@save');
-    Route::post('/bloquear','PerfilController@bloquear');
-    Route::post('/activar','PerfilController@activar');
-    Route::post('/eliminar','PerfilController@eliminar');
+    Route::get('/', 'PerfilController@index')->middleware('validateSession');
+    Route::post('/get-main-list', 'PerfilController@GetMainList')->middleware('validateSession');
+    Route::get('/editar/{idPerfil?}','PerfilController@edit')->middleware('validateSession');
+    Route::post('/save','PerfilController@save')->middleware('validateSession');
+    Route::post('/bloquear','PerfilController@bloquear')->middleware('validateSession');
+    Route::post('/activar','PerfilController@activar')->middleware('validateSession');
+    Route::post('/eliminar','PerfilController@eliminar')->middleware('validateSession');
 });
 
 Route::group(['prefix'=>'cargo'],function(){
@@ -108,6 +108,14 @@ Route::group(['prefix'=>'tipo-servicio'],function(){
     Route::get('/editar/{idTipoServicio?}','TipoServicioController@edit');
     Route::post('/save','TipoServicioController@save');
     Route::post('/eliminar','TipoServicioController@eliminar');
+});
+
+Route::group(['prefix'=>'tipo-intervencion'],function(){
+    Route::get('/', 'TipoIntervencionController@index');
+    Route::post('/get-main-list', 'TipoIntervencionController@GetMainList');
+    Route::get('/editar/{idTipoIntervencion?}','TipoIntervencionController@edit');
+    Route::post('/save','TipoIntervencionController@save');
+    Route::post('/eliminar','TipoIntervencionController@eliminar');
 });
 
 Route::group(['prefix'=>'tipo-examen'],function(){
@@ -196,6 +204,26 @@ Route::group(['prefix'=>'servicio'],function(){
     Route::post('/eliminar','ServicioController@eliminar');
 });
 
+Route::group(['prefix'=>'intervencion'],function(){
+    Route::post('/get-main-list', 'IntervencionController@GetMainList');
+    Route::get('/editar/{idHistoria}/{idServicio?}','IntervencionController@edit');
+    Route::post('/save','IntervencionController@save');
+    Route::post('/eliminar','IntervencionController@eliminar');
+});
+
+Route::group(['prefix'=>'consulta'],function(){
+    Route::post('/get-main-list', 'ConsultaController@GetMainList');
+    Route::get('/editar/{idHistoria}/{idConsulta?}','ConsultaController@edit');
+    Route::post('/save','ConsultaController@save');
+    Route::post('/eliminar','ConsultaController@eliminar');
+    Route::post('/get-main-list-detalle', 'ConsultaController@GetMainListDetalle');
+    Route::post('/add-detalle','ConsultaController@addDetalle');
+    Route::post('/remove-detalle','ConsultaController@removeDetalle');
+    Route::post('/get-main-list-examen', 'ConsultaController@GetMainListExamen');
+    Route::post('/add-examen','ConsultaController@addExamen');
+    Route::post('/remove-examen','ConsultaController@removeExamen');
+});
+
 Route::group(['prefix'=>'cita'],function(){
     Route::get('/', 'CitaController@index');
     Route::post('/get-main-list', 'CitaController@GetMainList');
@@ -205,4 +233,9 @@ Route::group(['prefix'=>'cita'],function(){
     Route::post('/activar','CitaController@activar');
     Route::post('/eliminar','CitaController@eliminar');
     Route::post('/cargar-mascota','CitaController@cargarMascota');
+});
+
+Route::group(['prefix'=>'reporte'],function(){
+    Route::get('/', 'ReporteController@index');
+    Route::post('/get-main-list', 'ReporteController@GetMainList');
 });

@@ -9,7 +9,7 @@
                 </button>
             </div>
             <div class="item ui colhidden">
-                <button id="servicio_save" class="ui button primary compact">
+                <button id="intervencion_save" class="ui button primary compact">
                     <i class="icon save"></i>Guardar
                 </button>
             </div>
@@ -25,7 +25,7 @@
                     <a class="active item" data-tab="first">Servicio</a>
                 </div>
                 <div class="ui bottom attached active tab segment" data-tab="first">
-                    <form action="{{ action('ServicioController@save') }}" method="post" id="servicio_ficha_registro"
+                    <form action="{{ action('IntervencionController@save') }}" method="post" id="intervencion_ficha_registro"
                           class="ui form">
                         {{ csrf_field() }}
                         <div class="ui form">
@@ -33,37 +33,37 @@
                                 <div class="sixteen wide field">
                                     <div class="ui fluid card">
                                         <div class="content">
-                                            <input type="hidden" name="servicio_id" id="servicio_id"
-                                                   @if (isset($rsServicio)) value="{{$rsServicio->servicio_id}}" @endif>
+                                            <input type="hidden" name="intervencion_id" id="intervencion_id"
+                                                   @if (isset($rsIntervencion)) value="{{$rsIntervencion->intervencion_id}}" @endif>
 
-                                            <input type="hidden" name="servicio_historia_id" id="servicio_historia_id"
+                                            <input type="hidden" name="intervencion_historia_id" id="intervencion_historia_id"
                                                    @if (isset($idHistoria)) value="{{ $idHistoria  }}" @endif>
                                             <div class="fields">
-                                                <div class="eight wide field servicio_servtip_id required">
-                                                    @if (count($tipoServicio) > 0)
-                                                        <label>Tipo Servicio</label>
-                                                        <select class="ui search dropdown" id="servicio_servtip_id" name="servicio_servtip_id">
-                                                            <option value="">Seleccione Tipo Servicio</option>
-                                                            @foreach ($tipoServicio as $tipo)
-                                                                <option value="{{$tipo->servtip_id}}" @if (isset($rsServicio)) @if ($tipo->servtip_id == $rsServicio->servicio_servtip_id ) selected  @endif @endif >{{ $tipo->servtip_nombre }}</option>
+                                                <div class="eight wide field intervencion_interventip_id required">
+                                                    @if (count($tipoIntervencion) > 0)
+                                                        <label>Tipo Intervencion</label>
+                                                        <select class="ui search dropdown" id="intervencion_interventip_id" name="intervencion_interventip_id">
+                                                            <option value="">Seleccione Tipo Intervencion</option>
+                                                            @foreach ($tipoIntervencion as $tipo)
+                                                                <option value="{{$tipo->intervenciont_id}}" @if (isset($rsIntervencion)) @if ($tipo->intervenciont_id == $rsIntervencion->intervencion_interventip_id ) selected  @endif @endif >{{ $tipo->intervenciont_nombre }}</option>
                                                             @endforeach
                                                         </select>
                                                     @endif
                                                 </div>
-                                                <div class="eight wide field servicio_fecha required">
+                                                <div class="eight wide field intervencion_fecha required">
                                                     <label>Fecha</label>
                                                     <div class="ui input left icon">
                                                         <i class="calendar icon"></i>
-                                                        <input id="servicio_fecha" type="text" name="servicio_fecha"
-                                                                @if (isset($rsServicio)) value="{{$rsServicio->servicio_fecha}}" @endif>
+                                                        <input id="intervencion_fecha" type="text" name="intervencion_fecha"
+                                                                @if (isset($rsIntervencion)) value="{{$rsIntervencion->intervencion_fecha}}" @endif>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="fields">
-                                                <div class="sixteen wide field servicio_observacion required">
-                                                    <label>Observacion</label>
-                                                    <textarea rows="2" id="servicio_observacion" name="servicio_observacion"
-                                                    >@if (isset($rsServicio)) {{$rsServicio->servicio_observacion}}@endif</textarea>
+                                                <div class="sixteen wide field intervencion_descripcion required">
+                                                    <label>Descripcion</label>
+                                                    <textarea rows="2" id="intervencion_descripcion" name="intervencion_descripcion"
+                                                    >@if (isset($rsIntervencion)) {{$rsIntervencion->intervencion_descripcion}}@endif</textarea>
                                                 </div>
                                             </div>
                                         </div>
@@ -86,26 +86,26 @@
                 window.location.href = "{{ url('mascota/historia') }}/"+"{{ $rsMascota->mascota_id }}";
             });
 
-            $('#servicio_fecha').flatpickr({
+            $('#intervencion_fecha').flatpickr({
                 maxDate: new Date(),
                 // locale:'es',
                 dateFormat:'d/m/Y'
             });
 
-            $("#servicio_servtip_id").dropdown({
+            $("#intervencion_interventip_id").dropdown({
                 fullTextSearch:true
             });
 
-            $('#servicio_save').click(function (e) {
+            $('#intervencion_save').click(function (e) {
                 e.preventDefault();
                 $.ajax({
-                    url: "{{ action('ServicioController@save') }}",
+                    url: "{{ action('IntervencionController@save') }}",
                     data: {
-                        servicio_id: $("#servicio_id").val(),
-                        servicio_servtip_id: $("#servicio_servtip_id").val(),
-                        servicio_historia_id: $("#servicio_historia_id").val(),
-                        servicio_fecha: $("#servicio_fecha").val(),
-                        servicio_observacion: $("#servicio_observacion").val(),
+                        intervencion_id: $("#intervencion_id").val(),
+                        intervencion_interventip_id: $("#intervencion_interventip_id").val(),
+                        intervencion_historia_id: $("#intervencion_historia_id").val(),
+                        intervencion_fecha: $("#intervencion_fecha").val(),
+                        intervencion_descripcion: $("#intervencion_descripcion").val(),
                     },
                     type: 'POST',
                     success: function (response) {
@@ -116,12 +116,12 @@
                             msg = data.data;
                             if (msg) {
                                 $.each(msg, function (k, v) {
-                                    $('#servicio_ficha_registro .' + k).addClass('error');
+                                    $('#intervencion_ficha_registro .' + k).addClass('error');
                                     if (k == 'detalle') toast('error', 1500, v);
                                 });
                             }
                         } else if (response.status == STATUS_OK) {
-                            toast('success', 3000, 'Servicio Guardado');
+                            toast('success', 3000, 'Intervencion Guardado');
                             window.location.href = "{{ url('mascota/historia') }}/"+response.idMascota;
                         }
                     },

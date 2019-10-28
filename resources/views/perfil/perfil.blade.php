@@ -13,6 +13,11 @@
                     <i class="icon save"></i>Guardar
                 </button>
             </div>
+            <div class="item ui colhidden">
+                <button id="imprimir" class="ui button primary compact">
+                    <i class="icon file"></i>Imprimir
+                </button>
+            </div>
         </div>
     </div>
     <div class="mainWrap navslide">
@@ -25,7 +30,7 @@
                     <form action="{{ action('PerfilController@save') }}" method="post" id="perfil_ficha_registro"
                           class="ui form">
                         {{ csrf_field() }}
-                        <div class="ui form">
+                        <div class="ui form" id="div_imprimir">
                             <div class="fields">
                                 <div class="sixteen wide field">
                                     <div class="ui fluid card">
@@ -97,6 +102,16 @@
 @section('scripts')
     <script type="text/javascript">
         $(document).ready(function () {
+
+            $("#imprimir").click(function(){
+                // var mode = 'iframe'; //popup
+                // var close = mode == "popup";
+                // var option = { mode : mode, popClose : close};
+                var option = {popTitle:"prueba de impresion"};
+                $("#div_imprimir").printArea(option);
+                // $(".app_despacho_ficha").modal('hide');
+
+            });
 
             var modulesPriv = [];
 

@@ -78,9 +78,9 @@
                                                         </select>
                                                     @endif
                                                 </div>
-                                                <div class="six wide field tratamientod_frecuencia required">
-                                                    <label>Frecuencia (horas)</label>
-                                                    <input id="tratamientod_frecuencia" type="number" min="1" name="tratamientod_frecuencia">
+                                                <div class="six wide field tratamientod_cantidad required">
+                                                    <label>Cantidad</label>
+                                                    <input id="tratamientod_cantidad" type="text" name="tratamientod_cantidad">
                                                 </div>
                                                 <div class="six wide field tratamientod_duracion required">
                                                     <label>Duracion (dias)</label>
@@ -88,6 +88,10 @@
                                                 </div>
                                             </div>
                                             <div class="fields">
+                                                <div class="six wide field tratamientod_frecuencia required">
+                                                    <label>Frecuencia (horas)</label>
+                                                    <input id="tratamientod_frecuencia" type="number" min="1" name="tratamientod_frecuencia">
+                                                </div>
                                                 <div class="eight wide field tratamientod_dosis required">
                                                     <label>Dosis</label>
                                                     <input id="tratamientod_dosis" type="text" name="tratamientod_dosis">
@@ -152,7 +156,7 @@
                                 });
                             }
                         } else if (response.status == STATUS_OK) {
-                            toast('success', 3000, 'Tratamiento Guardado');
+                            toast('success', 3000, 'tratamiento Guardado');
                             window.location.href = "{{ url('mascota/historia') }}/"+response.idMascota;
                         }
                     },
@@ -214,6 +218,7 @@
 
                     // {field: "&nbsp;", title: 'ESTADO', width: "60px", template: "#= estado #"},
                     {field: "tratamientod_producto_id", title: 'PRODUCTO', width: '80px'},
+                    {field: "tratamientod_cantidad", title: 'CANTIDAD', width: '80px'},
                     {field: "tratamientod_frecuencia", title: 'FRECUENDIA', width: '80px'},
                     {field: "tratamientod_duracion", title: 'DURACION', width: '80px'},
                     {field: "tratamientod_dosis", title: 'DOSIS', width: '80px'},
@@ -260,6 +265,7 @@
                         tratamientod_frecuencia: $("#tratamientod_frecuencia").val(),
                         tratamientod_duracion: $("#tratamientod_duracion").val(),
                         tratamientod_dosis: $("#tratamientod_dosis").val(),
+                        tratamientod_cantidad: $("#tratamientod_cantidad").val(),
                     },
                     type: 'POST',
                     success: function (response) {
@@ -281,6 +287,7 @@
                             $("#tratamientod_frecuencia").val('');
                             $("#tratamientod_duracion").val('');
                             $("#tratamientod_dosis").val('');
+                            $("#tratamientod_cantidad").val('');
                         }
                     },
                     statusCode: {

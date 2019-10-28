@@ -13,6 +13,7 @@ class TratamientoDetalle extends Model
         'tratamientod_id',
         'tratamientod_tratamiento_id',
         'tratamientod_producto_id',
+        'tratamientod_cantidad',
         'tratamientod_dosis',
         'tratamientod_frecuencia',
         'tratamientod_duracion',

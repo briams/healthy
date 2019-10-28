@@ -1,11 +1,13 @@
 {{--<!DOCTYPE html>--}}
 <html lang="en">
 <head>
-    <title>HEALTHY ADMIN</title>
+    <title>HEALTHY PETS</title>
     <meta charset="utf-8"/>
     <meta name="google" content="notranslate">
     <meta name=viewport content="width=device-width, initial-scale=1"/>
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <link rel="icon" type="image/png" href="{{ url('/img/logo.ico') }}" sizes="40x40">
 
     <link rel="stylesheet" type="text/css" href="{{ asset('semantic/dist/semantic.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('kendoui/styles/kendo.common-material.min.css') }}">
@@ -26,8 +28,8 @@
 <body style="width:100%;">
 <div id="contextWrap">
     <div id="app_header" class="ui menu">
-        <div class="menu colhidden">
-            <H1>Healthy</H1>
+        <div class="item ui colhidden" style="width:190px;background-repeat:no-repeat;background-position: center center;padding-left: 0px;">
+            <img src={{ url('/img/logo.png') }} width="" height="" alt="" style="width: 190px; height: 120px;"/>
         </div>
         <div class="right menu colhidden">
             <a class="item labeled rightsidebar computer only" id="app_logoff">
@@ -59,7 +61,7 @@
             @else
                 <!-- menu sin dropdown-->
                     <div class="title item">
-                        <a href=" /{{ url($modulo->url) }}">
+                        <a href=" {{ url($modulo->url) }}">
                             <i class="{{$modulo->icono}} titleIcon icon"></i>
                             <span class="colhidden">{{ $modulo->nombre }}</span>
                         </a>
@@ -74,6 +76,7 @@
 </div>
 <!-- jQuery -->
 <script src="{{ URL::asset('js/jquery.js') }}" charset="utf-8"></script>
+<script src="{{ URL::asset('js/jquery-print-area.js') }}"></script>
 <script src="{{ asset('semantic/dist/semantic.min.js') }}"></script>
 <script src="{{ asset('kendoui/js/kendo.all.min.js') }}"></script>
 <script src="{{ asset('flatpickr/flatpickr.min.js') }}"></script>
