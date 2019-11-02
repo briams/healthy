@@ -27,6 +27,25 @@
 @stop
 
 @section('scripts')
+
+    <!-- Load Pako ZLIB library to enable PDF compression -->
+    {{--<script src="https://kendo.cdn.telerik.com/2019.3.1023/js/pako_deflate.min.js"></script>--}}
+
+    <script type="x/kendo-template" id="page-template">
+        <div class="page-template">
+            <div class="header">
+                <div style="float: right">Page #: pageNum # of #: totalPages #</div>
+                Reporte de Productos Usados
+            </div>
+            <div class="watermark">Healthy Pets</div>
+            <div class="footer">
+                Page #: pageNum # of #: totalPages #
+            </div>
+        </div>
+    </script>
+
+@extends('layouts.stylepdf')
+
     <script type="text/javascript">
 
         $('#desde').flatpickr({
@@ -71,6 +90,30 @@
         });
 
         var grid = $("#grid").kendoGrid({
+            toolbar: [
+                // "excel",
+                // "pdf"
+                { name: "excel", text: "Excel"},
+                { name: "pdf", text: "Pdf"}
+            ],
+            excel: {
+                fileName: "Products Report.xlsx",
+                proxyURL: "https://demos.telerik.com/kendo-ui/service/export",
+                allPages: true,
+                filterable: true
+            },
+            pdf: {
+                title: "Products Report",
+                fileName: "Products Report.pdf",
+                allPages: true,
+                avoidLinks: true,
+                paperSize: "A4",
+                margin: { top: "2cm", left: "1cm", right: "1cm", bottom: "1cm" },
+                landscape: false,//true = horizontal   false = vertical
+                repeatHeaders: true,
+                template: $("#page-template").html(),
+                scale: 0.8
+            },
             dataSource: mainDataSource,
             pageable: {
                 refresh: true,

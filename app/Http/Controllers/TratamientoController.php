@@ -125,6 +125,10 @@ class TratamientoController extends Controller
         }
 
         $rsHistoria = Historia::getHistoria($request->input('tratamiento_historia_id'));
+
+        $user = Session::get('usuario');
+        $request->merge(['tratamiento_usuario' => $user->idUsuario]);
+
         if (!$request->filled('tratamiento_id')) {
             $request->merge(['tratamiento_estado' => ST_ACTIVO]);
             $request->merge(['tratamiento_fecha_registro' => Carbon::now() ]);

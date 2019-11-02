@@ -42,3 +42,6 @@ define('ESTADO_CITA',[
     3 => 'Cancelada',
     4 => 'Tomada',
 ]);
+
+
+define('BASE_WEB_ROOT','localhost/healthy/public/');

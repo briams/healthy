@@ -16,6 +16,7 @@ class Servicio extends Model
         'servicio_fecha',
         'servicio_observacion',
         'servicio_estado',
+        'servicio_usuario',
     ];
 
     public static function getList($take,$skip,$idHistoria)

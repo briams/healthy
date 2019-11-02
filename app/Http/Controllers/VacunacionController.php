@@ -9,6 +9,7 @@ use App\Vacuna;
 use App\Vacunacion;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 
 class VacunacionController extends Controller
@@ -106,6 +107,10 @@ class VacunacionController extends Controller
         }
 
         $rsHistoria = Historia::getHistoria($request->input('vacunacion_historia_id'));
+
+        $user = Session::get('usuario');
+        $request->merge(['vacunacion_usuario' => $user->idUsuario]);
+
         if (!$request->filled('vacunacion_id')) {
             $request->merge(['vacunacion_estado' => ST_ACTIVO]);
             $request->merge(['vacunacion_fecha_registro' => Carbon::now() ]);

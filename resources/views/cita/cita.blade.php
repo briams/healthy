@@ -97,7 +97,9 @@
             $('#cita_fecha').flatpickr({
                 minDate: new Date(),
                 // locale:'es',
-                dateFormat:'d/m/Y'
+                // dateFormat:'d/m/Y'
+                enableTime: true,
+                dateFormat: "d/m/Y H:i",
             });
 
             $('#cita_save').click(function (e) {

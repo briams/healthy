@@ -676,7 +676,7 @@ $.fn.form = function(parameters) {
                 isErrored    = $fieldGroup.hasClass(className.error)
               ;
               if(isErrored) {
-                module.verbose('Resetting error on field', $fieldGroup);
+                module.verbose('Resetting errors on field', $fieldGroup);
                 $fieldGroup.removeClass(className.error);
                 $prompt.remove();
               }
@@ -712,7 +712,7 @@ $.fn.form = function(parameters) {
                 return;
               }
               if(isErrored) {
-                module.verbose('Resetting error on field', $fieldGroup);
+                module.verbose('Resetting errors on field', $fieldGroup);
                 $fieldGroup.removeClass(className.error);
                 $prompt.remove();
               }
@@ -1205,7 +1205,7 @@ $.fn.form = function(parameters) {
               ? [errors]
               : errors
             ;
-            module.verbose('Adding field error state', identifier);
+            module.verbose('Adding field errors state', identifier);
             $fieldGroup
               .addClass(className.error)
             ;
@@ -1221,23 +1221,23 @@ $.fn.form = function(parameters) {
               ;
               if(!promptExists) {
                 if(settings.transition && $.fn.transition !== undefined && $module.transition('is supported')) {
-                  module.verbose('Displaying error with css transition', settings.transition);
+                  module.verbose('Displaying errors with css transition', settings.transition);
                   $prompt.transition(settings.transition + ' in', settings.duration);
                 }
                 else {
-                  module.verbose('Displaying error with fallback javascript animation');
+                  module.verbose('Displaying errors with fallback javascript animation');
                   $prompt
                     .fadeIn(settings.duration)
                   ;
                 }
               }
               else {
-                module.verbose('Inline errors are disabled, no inline error added', identifier);
+                module.verbose('Inline errors are disabled, no inline errors added', identifier);
               }
             }
           },
           errors: function(errors) {
-            module.debug('Adding form error messages', errors);
+            module.debug('Adding form errors messages', errors);
             module.set.error();
             $message
               .html( settings.templates.error(errors) )
@@ -1808,7 +1808,7 @@ $.fn.form.settings = {
 
   templates: {
 
-    // template that produces error message
+    // template that produces errors message
     error: function(errors) {
       var
         html = '<ul class="list">'
@@ -8171,7 +8171,7 @@ $.fn.dropdown.settings = {
     count         : '{count} selected',
     maxSelections : 'Max {maxCount} selections',
     noResults     : 'No results found.',
-    serverError   : 'There was an error contacting the server'
+    serverError   : 'There was an errors contacting the server'
   },
 
   error : {
@@ -12016,7 +12016,7 @@ $.fn.popup.settings = {
   // number of pixels from edge of popup to pointing arrow center (used from centering)
   arrowPixelsFromEdge: 20,
 
-  // delay used to prevent accidental refiring of animations due to user error
+  // delay used to prevent accidental refiring of animations due to user errors
   delay : {
     show : 50,
     hide : 70
@@ -12516,7 +12516,7 @@ $.fn.progress = function(parameters) {
             $module.removeClass(className.warning);
           },
           error: function() {
-            module.verbose('Removing error state');
+            module.verbose('Removing errors state');
             $module.removeClass(className.error);
           }
         },
@@ -12710,7 +12710,7 @@ $.fn.progress = function(parameters) {
           },
           error : function(text) {
             text = text || settings.text.error;
-            module.debug('Setting error state');
+            module.debug('Setting errors state');
             $module.addClass(className.error);
             module.remove.active();
             module.remove.success();
@@ -17425,7 +17425,7 @@ $.fn.sticky = function(parameters) {
             ;
             if(tagName === 'HTML' || tagName == 'body') {
               // this can trigger for too many reasons
-              //module.error(error.container, tagName, $module);
+              //module.errors(errors.container, tagName, $module);
               module.determineContainer();
             }
             else {
@@ -20603,12 +20603,12 @@ $.api = $.fn.api = function(parameters) {
                 return true;
               }
               else if(status == 'invalid') {
-                module.debug('JSON did not pass success test. A server-side error has most likely occurred', response);
+                module.debug('JSON did not pass success test. A server-side errors has most likely occurred', response);
               }
               else if(status == 'error') {
                 if(xhr !== undefined) {
-                  module.debug('XHR produced a server error', status, httpMessage);
-                  // make sure we have an error to display to console
+                  module.debug('XHR produced a server errors', status, httpMessage);
+                  // make sure we have an errors to display to console
                   if( xhr.status != 200 && httpMessage !== undefined && httpMessage !== '') {
                     module.error(error.statusMessage + httpMessage, ajaxSettings.url);
                   }
@@ -20617,7 +20617,7 @@ $.api = $.fn.api = function(parameters) {
               }
 
               if(settings.errorDuration && status !== 'aborted') {
-                module.debug('Adding error state');
+                module.debug('Adding errors state');
                 module.set.error();
                 if( module.should.removeError() ) {
                   setTimeout(module.remove.error, settings.errorDuration);
@@ -20705,7 +20705,7 @@ $.api = $.fn.api = function(parameters) {
 
         set: {
           error: function() {
-            module.verbose('Adding error state to element', $context);
+            module.verbose('Adding errors state to element', $context);
             $context.addClass(className.error);
           },
           loading: function() {
@@ -20717,7 +20717,7 @@ $.api = $.fn.api = function(parameters) {
 
         remove: {
           error: function() {
-            module.verbose('Removing error state from element', $context);
+            module.verbose('Removing errors state from element', $context);
             $context.removeClass(className.error);
           },
           loading: function() {
@@ -20737,8 +20737,8 @@ $.api = $.fn.api = function(parameters) {
           },
           errorFromRequest: function(response, status, httpMessage) {
             return ($.isPlainObject(response) && response.error !== undefined)
-              ? response.error // use json error message
-              : (settings.error[status] !== undefined) // use server error message
+              ? response.error // use json errors message
+              : (settings.error[status] !== undefined) // use server errors message
                 ? settings.error[status]
                 : httpMessage
             ;
@@ -21090,7 +21090,7 @@ $.api.settings = {
   // whether to hide errors after a period of time
   hideError         : 'auto',
 
-  // duration for error state
+  // duration for errors state
   errorDuration     : 2000,
 
   // whether parameters should be encoded with encodeURIComponent
@@ -21150,7 +21150,7 @@ $.api.settings = {
   // failed JSON success test
   onFailure   : function(response, $module) {},
 
-  // server error
+  // server errors
   onError     : function(errorMessage, $module) {},
 
   // request aborted
@@ -21161,9 +21161,9 @@ $.api.settings = {
   // errors
   error : {
     beforeSend        : 'The before send function has aborted the request',
-    error             : 'There was an error with your request',
+    error             : 'There was an errors with your request',
     exitConditions    : 'API Request Aborted. Exit conditions met',
-    JSONParse         : 'JSON could not be parsed during error handling',
+    JSONParse         : 'JSON could not be parsed during errors handling',
     legacyParameters  : 'You are using legacy API success callback names',
     method            : 'The method you called is not defined',
     missingAction     : 'API action used but no url was defined',
@@ -21171,9 +21171,9 @@ $.api.settings = {
     missingURL        : 'No URL specified for api event',
     noReturnedValue   : 'The beforeSend callback must return a settings object, beforeSend ignored.',
     noStorage         : 'Caching responses locally requires session storage',
-    parseError        : 'There was an error parsing your request',
+    parseError        : 'There was an errors parsing your request',
     requiredParameter : 'Missing a required URL parameter: ',
-    statusMessage     : 'Server gave an error: ',
+    statusMessage     : 'Server gave an errors: ',
     timeout           : 'Your request timed out'
   },
 

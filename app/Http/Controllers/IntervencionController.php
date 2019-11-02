@@ -9,6 +9,7 @@ use App\Mascota;
 use App\TipoIntervencion;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 
 class IntervencionController extends Controller
@@ -106,6 +107,10 @@ class IntervencionController extends Controller
         }
 
         $rsHistoria = Historia::getHistoria($request->input('intervencion_historia_id'));
+
+        $user = Session::get('usuario');
+        $request->merge(['intervencion_usuario' => $user->idUsuario]);
+
         if (!$request->filled('intervencion_id')) {
             $request->merge(['intervencion_estado' => ST_ACTIVO]);
             $intervencion = Intervencion::create($request->all());

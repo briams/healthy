@@ -14,26 +14,26 @@ Route::get('/', 'MainController@index');
 Route::post('/login', 'MainController@login')->name('login');
 Route::post('/logout', 'MainController@logout')->name('logout');
 
-Route::group(['prefix'=>'module'],function(){
-    Route::get('/', 'ModuleController@index')->middleware('validateSession');
-    Route::post('/get-main-list', 'ModuleController@GetMainList')->middleware('validateSession');
-    Route::get('/editar/{idModulo?}','ModuleController@edit')->middleware('validateSession');
-    Route::post('/save','ModuleController@save')->middleware('validateSession');
-    Route::post('/bloquear','ModuleController@bloquear')->middleware('validateSession');
-    Route::post('/activar','ModuleController@activar')->middleware('validateSession');
+Route::group(['prefix'=>'module', 'middleware' => ['validateSession','validatePrivilegues']],function(){
+    Route::get('/', 'ModuleController@index');
+    Route::post('/get-main-list', 'ModuleController@GetMainList');
+    Route::get('/editar/{idModulo?}','ModuleController@edit');
+    Route::post('/save','ModuleController@save');
+    Route::post('/bloquear','ModuleController@bloquear');
+    Route::post('/activar','ModuleController@activar');
 });
 
-Route::group(['prefix'=>'perfil'],function(){
-    Route::get('/', 'PerfilController@index')->middleware('validateSession');
-    Route::post('/get-main-list', 'PerfilController@GetMainList')->middleware('validateSession');
-    Route::get('/editar/{idPerfil?}','PerfilController@edit')->middleware('validateSession');
-    Route::post('/save','PerfilController@save')->middleware('validateSession');
-    Route::post('/bloquear','PerfilController@bloquear')->middleware('validateSession');
-    Route::post('/activar','PerfilController@activar')->middleware('validateSession');
-    Route::post('/eliminar','PerfilController@eliminar')->middleware('validateSession');
+Route::group(['prefix'=>'perfil', 'middleware' => ['validateSession','validatePrivilegues']],function(){
+    Route::get('/', 'PerfilController@index');
+    Route::post('/get-main-list', 'PerfilController@GetMainList');
+    Route::get('/editar/{idPerfil?}','PerfilController@edit');
+    Route::post('/save','PerfilController@save');
+    Route::post('/bloquear','PerfilController@bloquear');
+    Route::post('/activar','PerfilController@activar');
+    Route::post('/eliminar','PerfilController@eliminar');
 });
 
-Route::group(['prefix'=>'cargo'],function(){
+Route::group(['prefix'=>'cargo', 'middleware' => ['validateSession','validatePrivilegues']],function(){
     Route::get('/', 'CargoController@index');
     Route::post('/get-main-list', 'CargoController@GetMainList');
     Route::get('/editar/{idCargo?}','CargoController@edit');
@@ -41,7 +41,7 @@ Route::group(['prefix'=>'cargo'],function(){
     Route::post('/eliminar','CargoController@eliminar');
 });
 
-Route::group(['prefix'=>'personal'],function(){
+Route::group(['prefix'=>'personal', 'middleware' => ['validateSession','validatePrivilegues']],function(){
     Route::get('/', 'PersonalController@index');
     Route::post('/get-main-list', 'PersonalController@GetMainList');
     Route::get('/editar/{idPersonal?}','PersonalController@edit');
@@ -52,7 +52,7 @@ Route::group(['prefix'=>'personal'],function(){
     Route::post('/generate-user','PersonalController@generarUsuario');
 });
 
-Route::group(['prefix'=>'usuarios'],function(){
+Route::group(['prefix'=>'usuarios', 'middleware' => ['validateSession','validatePrivilegues']],function(){
     Route::get('/', 'UsuarioController@index');
     Route::post('/get-main-list', 'UsuarioController@GetMainList');
     Route::get('/editar/{idUser?}','UsuarioController@edit');
@@ -62,7 +62,7 @@ Route::group(['prefix'=>'usuarios'],function(){
     Route::post('/eliminar','UsuarioController@eliminar');
 });
 
-Route::group(['prefix'=>'especie'],function(){
+Route::group(['prefix'=>'especie', 'middleware' => ['validateSession','validatePrivilegues']],function(){
     Route::get('/', 'EspecieController@index');
     Route::post('/get-main-list', 'EspecieController@GetMainList');
     Route::get('/editar/{idEspecie?}','EspecieController@edit');
@@ -70,7 +70,7 @@ Route::group(['prefix'=>'especie'],function(){
     Route::post('/eliminar','EspecieController@eliminar');
 });
 
-Route::group(['prefix'=>'raza'],function(){
+Route::group(['prefix'=>'raza', 'middleware' => ['validateSession','validatePrivilegues']],function(){
     Route::get('/', 'RazaController@index');
     Route::post('/get-main-list', 'RazaController@GetMainList');
     Route::get('/editar/{idRaza?}','RazaController@edit');
@@ -78,7 +78,7 @@ Route::group(['prefix'=>'raza'],function(){
     Route::post('/eliminar','RazaController@eliminar');
 });
 
-Route::group(['prefix'=>'sexo'],function(){
+Route::group(['prefix'=>'sexo', 'middleware' => ['validateSession','validatePrivilegues']],function(){
     Route::get('/', 'SexoController@index');
     Route::post('/get-main-list', 'SexoController@GetMainList');
     Route::get('/editar/{idSexo?}','SexoController@edit');
@@ -86,7 +86,7 @@ Route::group(['prefix'=>'sexo'],function(){
     Route::post('/eliminar','SexoController@eliminar');
 });
 
-Route::group(['prefix'=>'tipo-documento'],function(){
+Route::group(['prefix'=>'tipo-documento', 'middleware' => ['validateSession','validatePrivilegues']],function(){
     Route::get('/', 'TipoDocumentoController@index');
     Route::post('/get-main-list', 'TipoDocumentoController@GetMainList');
     Route::get('/editar/{idTipDoc?}','TipoDocumentoController@edit');
@@ -94,7 +94,7 @@ Route::group(['prefix'=>'tipo-documento'],function(){
     Route::post('/eliminar','TipoDocumentoController@eliminar');
 });
 
-Route::group(['prefix'=>'unidad-medida'],function(){
+Route::group(['prefix'=>'unidad-medida', 'middleware' => ['validateSession','validatePrivilegues']],function(){
     Route::get('/', 'UnidadMedidaController@index');
     Route::post('/get-main-list', 'UnidadMedidaController@GetMainList');
     Route::get('/editar/{idUnidMedida?}','UnidadMedidaController@edit');
@@ -102,7 +102,7 @@ Route::group(['prefix'=>'unidad-medida'],function(){
     Route::post('/eliminar','UnidadMedidaController@eliminar');
 });
 
-Route::group(['prefix'=>'tipo-servicio'],function(){
+Route::group(['prefix'=>'tipo-servicio', 'middleware' => ['validateSession','validatePrivilegues']],function(){
     Route::get('/', 'TipoServicioController@index');
     Route::post('/get-main-list', 'TipoServicioController@GetMainList');
     Route::get('/editar/{idTipoServicio?}','TipoServicioController@edit');
@@ -110,7 +110,7 @@ Route::group(['prefix'=>'tipo-servicio'],function(){
     Route::post('/eliminar','TipoServicioController@eliminar');
 });
 
-Route::group(['prefix'=>'tipo-intervencion'],function(){
+Route::group(['prefix'=>'tipo-intervencion', 'middleware' => ['validateSession','validatePrivilegues']],function(){
     Route::get('/', 'TipoIntervencionController@index');
     Route::post('/get-main-list', 'TipoIntervencionController@GetMainList');
     Route::get('/editar/{idTipoIntervencion?}','TipoIntervencionController@edit');
@@ -118,7 +118,7 @@ Route::group(['prefix'=>'tipo-intervencion'],function(){
     Route::post('/eliminar','TipoIntervencionController@eliminar');
 });
 
-Route::group(['prefix'=>'tipo-examen'],function(){
+Route::group(['prefix'=>'tipo-examen', 'middleware' => ['validateSession','validatePrivilegues']],function(){
     Route::get('/', 'TipoExamenController@index');
     Route::post('/get-main-list', 'TipoExamenController@GetMainList');
     Route::get('/editar/{idTipoExamen?}','TipoExamenController@edit');
@@ -126,7 +126,7 @@ Route::group(['prefix'=>'tipo-examen'],function(){
     Route::post('/eliminar','TipoExamenController@eliminar');
 });
 
-Route::group(['prefix'=>'vacuna'],function(){
+Route::group(['prefix'=>'vacuna', 'middleware' => ['validateSession','validatePrivilegues']],function(){
     Route::get('/', 'VacunaController@index');
     Route::post('/get-main-list', 'VacunaController@GetMainList');
     Route::get('/editar/{idVacuna?}','VacunaController@edit');
@@ -136,7 +136,7 @@ Route::group(['prefix'=>'vacuna'],function(){
     Route::post('/eliminar','VacunaController@eliminar');
 });
 
-Route::group(['prefix'=>'producto'],function(){
+Route::group(['prefix'=>'producto', 'middleware' => ['validateSession','validatePrivilegues']],function(){
     Route::get('/', 'ProductoController@index');
     Route::post('/get-main-list', 'ProductoController@GetMainList');
     Route::get('/editar/{idProducto?}','ProductoController@edit');
@@ -146,7 +146,7 @@ Route::group(['prefix'=>'producto'],function(){
     Route::post('/eliminar','ProductoController@eliminar');
 });
 
-Route::group(['prefix'=>'cliente'],function(){
+Route::group(['prefix'=>'cliente', 'middleware' => ['validateSession','validatePrivilegues']],function(){
     Route::get('/', 'ClienteController@index');
     Route::post('/get-main-list', 'ClienteController@GetMainList');
     Route::get('/editar/{idCliente?}','ClienteController@edit');
@@ -157,7 +157,7 @@ Route::group(['prefix'=>'cliente'],function(){
     Route::post('/buscar-documento','ClienteController@searchDoc');
 });
 
-Route::group(['prefix'=>'mascota'],function(){
+Route::group(['prefix'=>'mascota', 'middleware' => ['validateSession','validatePrivilegues']],function(){
     Route::get('/', 'MascotaController@index');
     Route::post('/get-main-list', 'MascotaController@GetMainList');
     Route::get('/editar/{idMascota?}','MascotaController@edit');
@@ -169,25 +169,25 @@ Route::group(['prefix'=>'mascota'],function(){
     Route::get('/historia/{idMascota?}','MascotaController@historia');
 });
 
-Route::group(['prefix'=>'historia'],function(){
+Route::group(['prefix'=>'historia', 'middleware' => ['validateSession','validatePrivilegues']],function(){
     Route::post('/save','HistoriaController@save');
 });
 
-Route::group(['prefix'=>'vacunacion'],function(){
+Route::group(['prefix'=>'vacunacion', 'middleware' => ['validateSession','validatePrivilegues']],function(){
     Route::post('/get-main-list', 'VacunacionController@GetMainList');
     Route::get('/editar/{idHistoria}/{idVacunacion?}','VacunacionController@edit');
     Route::post('/save','VacunacionController@save');
     Route::post('/eliminar','VacunacionController@eliminar');
 });
 
-Route::group(['prefix'=>'internamiento'],function(){
+Route::group(['prefix'=>'internamiento', 'middleware' => ['validateSession','validatePrivilegues']],function(){
     Route::post('/get-main-list', 'InternamientoController@GetMainList');
     Route::get('/editar/{idHistoria}/{idInternamiento?}','InternamientoController@edit');
     Route::post('/save','InternamientoController@save');
     Route::post('/eliminar','InternamientoController@eliminar');
 });
 
-Route::group(['prefix'=>'tratamiento'],function(){
+Route::group(['prefix'=>'tratamiento', 'middleware' => ['validateSession','validatePrivilegues']],function(){
     Route::post('/get-main-list', 'TratamientoController@GetMainList');
     Route::get('/editar/{idHistoria}/{idTratamiento?}','TratamientoController@edit');
     Route::post('/save','TratamientoController@save');
@@ -197,21 +197,21 @@ Route::group(['prefix'=>'tratamiento'],function(){
     Route::post('/remove-detalle','TratamientoController@removeDetalle');
 });
 
-Route::group(['prefix'=>'servicio'],function(){
+Route::group(['prefix'=>'servicio', 'middleware' => ['validateSession','validatePrivilegues']],function(){
     Route::post('/get-main-list', 'ServicioController@GetMainList');
     Route::get('/editar/{idHistoria}/{idServicio?}','ServicioController@edit');
     Route::post('/save','ServicioController@save');
     Route::post('/eliminar','ServicioController@eliminar');
 });
 
-Route::group(['prefix'=>'intervencion'],function(){
+Route::group(['prefix'=>'intervencion', 'middleware' => ['validateSession','validatePrivilegues']],function(){
     Route::post('/get-main-list', 'IntervencionController@GetMainList');
     Route::get('/editar/{idHistoria}/{idServicio?}','IntervencionController@edit');
     Route::post('/save','IntervencionController@save');
     Route::post('/eliminar','IntervencionController@eliminar');
 });
 
-Route::group(['prefix'=>'consulta'],function(){
+Route::group(['prefix'=>'consulta', 'middleware' => ['validateSession','validatePrivilegues']],function(){
     Route::post('/get-main-list', 'ConsultaController@GetMainList');
     Route::get('/editar/{idHistoria}/{idConsulta?}','ConsultaController@edit');
     Route::post('/save','ConsultaController@save');
@@ -224,7 +224,7 @@ Route::group(['prefix'=>'consulta'],function(){
     Route::post('/remove-examen','ConsultaController@removeExamen');
 });
 
-Route::group(['prefix'=>'cita'],function(){
+Route::group(['prefix'=>'cita', 'middleware' => ['validateSession','validatePrivilegues']],function(){
     Route::get('/', 'CitaController@index');
     Route::post('/get-main-list', 'CitaController@GetMainList');
     Route::get('/editar/{idCita?}','CitaController@edit');
@@ -235,7 +235,7 @@ Route::group(['prefix'=>'cita'],function(){
     Route::post('/cargar-mascota','CitaController@cargarMascota');
 });
 
-Route::group(['prefix'=>'reporte'],function(){
+Route::group(['prefix'=>'reporte', 'middleware' => ['validateSession','validatePrivilegues']],function(){
     Route::get('/', 'ReporteController@index');
     Route::post('/get-main-list', 'ReporteController@GetMainList');
 });

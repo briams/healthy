@@ -17,6 +17,7 @@ class Intervencion extends Model
         'intervencion_descripcion',
         'intervencion_resultados',
         'intervencion_estado',
+        'intervencion_usuario',
     ];
 
     public static function getList($take,$skip,$idHistoria)

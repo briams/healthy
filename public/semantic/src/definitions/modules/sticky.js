@@ -398,7 +398,7 @@ $.fn.sticky = function(parameters) {
             ;
             if(tagName === 'HTML' || tagName == 'body') {
               // this can trigger for too many reasons
-              //module.error(error.container, tagName, $module);
+              //module.errors(errors.container, tagName, $module);
               module.determineContainer();
             }
             else {

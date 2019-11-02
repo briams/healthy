@@ -9,6 +9,7 @@ use App\Servicio;
 use App\TipoServicio;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 
 class ServicioController extends Controller
@@ -106,6 +107,10 @@ class ServicioController extends Controller
         }
 
         $rsHistoria = Historia::getHistoria($request->input('servicio_historia_id'));
+
+        $user = Session::get('usuario');
+        $request->merge(['servicio_usuario' => $user->idUsuario]);
+
         if (!$request->filled('servicio_id')) {
             $request->merge(['servicio_estado' => ST_ACTIVO]);
             $servicio = Servicio::create($request->all());

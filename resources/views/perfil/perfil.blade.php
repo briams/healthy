@@ -46,7 +46,7 @@
                                             </div>
                                             <div class="field">
                                                 <strong><p style="font-size:1.5em">Modulos</p></strong>
-                                                {{--<span class="error modulo_id"></span>--}}
+                                                {{--<span class="errors modulo_id"></span>--}}
                                                 @foreach ($modulosPadre as $modulo)
                                                     <div class="grouped fields">
                                                         {{--@if (count($modulo->hijos) > 0)--}}
@@ -71,6 +71,17 @@
                                                                                id="modulo_{{ $hijo->idModule }}">
                                                                         <label for="modulo_{{ $hijo->idModule }}">{{ $hijo->nombre }}</label>
                                                                     </div>
+                                                                    @foreach ($hijo->hijos as $modN3)
+                                                                        <div class="field" style="margin-left:20px;">
+                                                                            <div class="ui checkbox">
+                                                                                <input type="checkbox"
+                                                                                       name="modulo_{{ $modN3->idModule }}"
+                                                                                       {{ $modN3->privilegio }} value="{{ $modN3->idModule }}"
+                                                                                       id="modulo_{{ $modN3->idModule }}">
+                                                                                <label for="modulo_{{ $modN3->idModule }}">{{ $modN3->nombre }}</label>
+                                                                            </div>
+                                                                        </div>
+                                                                    @endforeach
                                                                 </div>
                                                             @endforeach
                                                         {{--@else--}}
@@ -118,6 +129,26 @@
             @foreach ($modulosPadre as $modulo)
             {{--@if (count($modulo->hijos) > 0)--}}
             @foreach ($modulo->hijos as $hijo)
+
+
+
+            @foreach ($hijo->hijos as $modN3)
+            @if ($modN3->privilegio != '')
+            modulesPriv.push({{ $modN3->idModule }}+'');
+            @endif
+            $('#modulo_{{ $modN3->idModule }}').click(function (e) {
+                id = $("#modulo_{{ $modN3->idModule }}").val();
+                if ($('#modulo_{{ $modN3->idModule }}').is(':checked')) {
+                    modulesPriv.push(id);
+                } else {
+                    var pos = modulesPriv.indexOf(id);
+                    modulesPriv.splice(pos, 1);
+                }
+                console.log(modulesPriv)
+            });
+            @endforeach
+
+
             @if ($hijo->privilegio != '')
             modulesPriv.push({{ $hijo->idModule }}+'');
             @endif

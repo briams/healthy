@@ -1425,7 +1425,7 @@ $.fn.popup.settings = {
   // number of pixels from edge of popup to pointing arrow center (used from centering)
   arrowPixelsFromEdge: 20,
 
-  // delay used to prevent accidental refiring of animations due to user error
+  // delay used to prevent accidental refiring of animations due to user errors
   delay : {
     show : 50,
     hide : 70

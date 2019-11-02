@@ -23,12 +23,24 @@
                 <div class="ui top attached tabular menu">
                     <a class="active item" data-tab="first">Historia</a>
                     @if (isset($rsHistoria))
+                        @if (in_array('vacunacion',$modulos))
                     <a class=" item" data-tab="second">Vacunacion</a>
+                        @endif
+                        @if (in_array('servicio',$modulos))
                     <a class=" item" data-tab="third">Servicios</a>
+                        @endif
+                        @if (in_array('tratamiento',$modulos))
                     <a class=" item" data-tab="fourth">Tratamiento</a>
+                        @endif
+                        @if (in_array('internamiento',$modulos))
                     <a class=" item" data-tab="fifth">Internamiento</a>
+                        @endif
+                        @if (in_array('intervencion',$modulos))
                     <a class=" item" data-tab="sixth">Intervencion</a>
+                        @endif
+                        @if (in_array('consulta',$modulos))
                     <a class=" item" data-tab="seventh">Consulta</a>
+                        @endif
                     @endif
 
 
@@ -447,15 +459,16 @@
                         context: '#grid .k-grid-content'
                     });
 
-                    $('.ajxEdit').click(function(e){
+                    $('#grid .ajxEdit').click(function(e){
                         e.preventDefault();
                         var id = $(this).attr('data-idVacunacion');
                         var idHistoria = $("#vacunacion_historia_id").val();
                         window.location.href="{{ url('vacunacion/editar') }}/"+ idHistoria+'/'+id;
                     });
 
-                    $('.ajxDelete').click(function(e){
+                    $('#grid .ajxDelete').click(function(e){
                         e.preventDefault();
+                        console.log('this', $(this));
                         var id = $(this).attr('data-idVacunacion');
                         $.ajax({
                             url : "{{ action('VacunacionController@eliminar') }}",
@@ -545,14 +558,14 @@
                         context: '#grid_internamiento .k-grid-content'
                     });
 
-                    $('.ajxEdit').click(function(e){
+                    $('#grid_internamiento .ajxEdit').click(function(e){
                         e.preventDefault();
                         var id = $(this).attr('data-idInternamiento');
                         var idHistoria = $("#internamiento_historia_id").val();
                         window.location.href="{{ url('internamiento/editar') }}/"+ idHistoria+'/'+id;
                     });
 
-                    $('.ajxDelete').click(function(e){
+                    $('#grid_internamiento .ajxDelete').click(function(e){
                         e.preventDefault();
                         var id = $(this).attr('data-idInternamiento');
                         $.ajax({
@@ -641,14 +654,14 @@
                         context: '#grid_tratamiento .k-grid-content'
                     });
 
-                    $('.ajxEdit').click(function(e){
+                    $('#grid_tratamiento .ajxEdit').click(function(e){
                         e.preventDefault();
                         var id = $(this).attr('data-idTratamiento');
                         var idHistoria = $("#tratamiento_historia_id").val();
                         window.location.href="{{ url('tratamiento/editar') }}/"+ idHistoria+'/'+id;
                     });
 
-                    $('.ajxDelete').click(function(e){
+                    $('#grid_tratamiento .ajxDelete').click(function(e){
                         e.preventDefault();
                         var id = $(this).attr('data-idTratamiento');
                         $.ajax({
@@ -737,14 +750,14 @@
                         context: '#grid_servicio .k-grid-content'
                     });
 
-                    $('.ajxEdit').click(function(e){
+                    $('#grid_servicio .ajxEdit').click(function(e){
                         e.preventDefault();
                         var id = $(this).attr('data-idServicio');
                         var idHistoria = $("#servicio_historia_id").val();
                         window.location.href="{{ url('servicio/editar') }}/"+ idHistoria+'/'+id;
                     });
 
-                    $('.ajxDelete').click(function(e){
+                    $('#grid_servicio .ajxDelete').click(function(e){
                         e.preventDefault();
                         var id = $(this).attr('data-idServicio');
                         $.ajax({
@@ -833,14 +846,14 @@
                         context: '#grid_intervencion .k-grid-content'
                     });
 
-                    $('.ajxEdit').click(function(e){
+                    $('#grid_intervencion .ajxEdit').click(function(e){
                         e.preventDefault();
                         var id = $(this).attr('data-idIntervencion');
                         var idHistoria = $("#intervencion_historia_id").val();
                         window.location.href="{{ url('intervencion/editar') }}/"+ idHistoria+'/'+id;
                     });
 
-                    $('.ajxDelete').click(function(e){
+                    $('#grid_intervencion .ajxDelete').click(function(e){
                         e.preventDefault();
                         var id = $(this).attr('data-idIntervencion');
                         $.ajax({
@@ -928,14 +941,14 @@
                         context: '#grid_consulta .k-grid-content'
                     });
 
-                    $('.ajxEdit').click(function(e){
+                    $('#grid_consulta .ajxEdit').click(function(e){
                         e.preventDefault();
                         var id = $(this).attr('data-idConsulta');
                         var idHistoria = $("#consulta_historia_id").val();
                         window.location.href="{{ url('consulta/editar') }}/"+ idHistoria+'/'+id;
                     });
 
-                    $('.ajxDelete').click(function(e){
+                    $('#grid_consulta .ajxDelete').click(function(e){
                         e.preventDefault();
                         var id = $(this).attr('data-idConsulta');
                         $.ajax({

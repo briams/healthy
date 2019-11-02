@@ -8,6 +8,7 @@ use App\Internamiento;
 use App\Mascota;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 
 class InternamientoController extends Controller
@@ -109,6 +110,10 @@ class InternamientoController extends Controller
 
 
         $rsHistoria = Historia::getHistoria($request->input('internamiento_historia_id'));
+
+        $user = Session::get('usuario');
+        $request->merge(['internamiento_usuario' => $user->idUsuario]);
+
         if (!$request->filled('internamiento_id')) {
             $request->merge(['internamiento_estado' => ST_ACTIVO]);
             $request->merge(['internamiento_fecha_registro' => Carbon::now() ]);

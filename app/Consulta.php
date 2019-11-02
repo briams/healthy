@@ -20,6 +20,7 @@ class Consulta extends Model
         'consulta_observaciones',
         'consulta_fecha_registro',
         'consulta_estado',
+        'consulta_usuario',
     ];
 
     public static function getList($take,$skip,$idHistoria)

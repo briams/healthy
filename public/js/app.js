@@ -4,6 +4,8 @@ const DB_FALSE = 0;
 const STATUS_OK = 2;
 const STATUS_FAIL = 1;
 
+var scrollerContent = null;
+
 function dataSourceBinding(dataSourceOptions, url) {
     $.ajax({
         url: url,
@@ -25,6 +27,48 @@ function dataSourceBinding(dataSourceOptions, url) {
         .always(function () {
             unfreeze();
         });
+}
+
+function resizeScreen()
+{
+    var containerWidth = ($(window).width()-190);
+    var containerHeight = ($(window).height() - 90);
+
+    $('#app__container_body').width(containerWidth);
+
+    $('#app__container_body').height(containerHeight);
+    // $('#app__container_body').css('overflow','hidden');
+
+    var gridElement = document.getElementById('grid');
+
+    if(gridElement === null) {
+
+        if (scrollerContent) scrollerContent.destroy();
+
+        scrollerContent = new PerfectScrollbar('#app__container_body');
+
+    }else{
+
+        var gridElement = $("#grid");
+
+        var dataArea = gridElement.find(".k-grid-content");
+        var newHeight = ($(window).height()-95);
+
+        gridElement.height(newHeight);
+
+        var diff = gridElement.innerHeight() - dataArea.innerHeight();
+        dataArea.height(newHeight - diff);
+
+        if(scrollerContent)
+        {
+            scrollerContent.destroy();
+            scrollerContent=null;
+        }
+
+    }
+
+    $('#app_content_toolbar').width($(window).width()-190);
+
 }
 
 function freeze() {

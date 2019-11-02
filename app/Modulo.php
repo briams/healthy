@@ -57,6 +57,12 @@ class Modulo extends Model
             ->first();
     }
 
+    public static function getIdModule($url)
+    {
+        return Modulo::where('url', '=', $url)
+            ->first()->idModule;
+    }
+
     private static function getClone()
     {
         return Modulo::where('estado', '=', DB_TRUE);

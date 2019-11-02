@@ -18,6 +18,7 @@ class Internamiento extends Model
         'internamiento_motivo',
         'internamiento_fecha_registro',
         'internamiento_estado',
+        'internamiento_usuario',
     ];
 
     public static function getList($take,$skip,$idHistoria)

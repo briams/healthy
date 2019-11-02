@@ -82,8 +82,14 @@ class PerfilController extends Controller
         foreach ($modulosPadres as $padre) {
             $hijos = Modulo::getListModuleChildren($padre->idModule);
             foreach ($hijos as $hijo) {
+                $modulosNivel3 = Modulo::getListModuleChildren($hijo->idModule);
+                foreach ($modulosNivel3 as $modN3) {
+                    $privilegio = Privilegio::getPrivilegio($idPerfil, $modN3->idModule);
+                    $modN3->privilegio = ($privilegio) ? "checked" : "";
+                }
                 $privilegio = Privilegio::getPrivilegio($idPerfil, $hijo->idModule);
                 $hijo->privilegio = ($privilegio) ? "checked" : "";
+                $hijo->hijos = $modulosNivel3;
             }
             $privilegio = Privilegio::getPrivilegio($idPerfil, $padre->idModule);
             $padre->privilegio = ($privilegio) ? "checked" : "";

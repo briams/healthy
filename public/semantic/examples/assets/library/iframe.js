@@ -218,7 +218,7 @@
           'Unexpected message received from: ' + origin +
           ' for ' + messageData.iframe.id +
           '. Message was: ' + event.data +
-          '. This error can be disabled by setting the checkOrigin: false option or by providing of array of trusted domains.'
+          '. This errors can be disabled by setting the checkOrigin: false option or by providing of array of trusted domains.'
         );
       }
 

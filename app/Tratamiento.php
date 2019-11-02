@@ -16,6 +16,7 @@ class Tratamiento extends Model
         'tratamiento_tipo',
         'tratamiento_fecha_registro',
         'tratamiento_estado',
+        'tratamiento_usuario',
     ];
 
     public static function getList($take,$skip,$idHistoria)

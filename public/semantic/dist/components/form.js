@@ -178,7 +178,7 @@ $.fn.form = function(parameters) {
                 isErrored    = $fieldGroup.hasClass(className.error)
               ;
               if(isErrored) {
-                module.verbose('Resetting error on field', $fieldGroup);
+                module.verbose('Resetting errors on field', $fieldGroup);
                 $fieldGroup.removeClass(className.error);
                 $prompt.remove();
               }
@@ -214,7 +214,7 @@ $.fn.form = function(parameters) {
                 return;
               }
               if(isErrored) {
-                module.verbose('Resetting error on field', $fieldGroup);
+                module.verbose('Resetting errors on field', $fieldGroup);
                 $fieldGroup.removeClass(className.error);
                 $prompt.remove();
               }
@@ -707,7 +707,7 @@ $.fn.form = function(parameters) {
               ? [errors]
               : errors
             ;
-            module.verbose('Adding field error state', identifier);
+            module.verbose('Adding field errors state', identifier);
             $fieldGroup
               .addClass(className.error)
             ;
@@ -723,23 +723,23 @@ $.fn.form = function(parameters) {
               ;
               if(!promptExists) {
                 if(settings.transition && $.fn.transition !== undefined && $module.transition('is supported')) {
-                  module.verbose('Displaying error with css transition', settings.transition);
+                  module.verbose('Displaying errors with css transition', settings.transition);
                   $prompt.transition(settings.transition + ' in', settings.duration);
                 }
                 else {
-                  module.verbose('Displaying error with fallback javascript animation');
+                  module.verbose('Displaying errors with fallback javascript animation');
                   $prompt
                     .fadeIn(settings.duration)
                   ;
                 }
               }
               else {
-                module.verbose('Inline errors are disabled, no inline error added', identifier);
+                module.verbose('Inline errors are disabled, no inline errors added', identifier);
               }
             }
           },
           errors: function(errors) {
-            module.debug('Adding form error messages', errors);
+            module.debug('Adding form errors messages', errors);
             module.set.error();
             $message
               .html( settings.templates.error(errors) )
@@ -1310,7 +1310,7 @@ $.fn.form.settings = {
 
   templates: {
 
-    // template that produces error message
+    // template that produces errors message
     error: function(errors) {
       var
         html = '<ul class="list">'

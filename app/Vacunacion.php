@@ -16,6 +16,7 @@ class Vacunacion extends Model
         'vacunacion_fecha',
         'vacunacion_fecha_registro',
         'vacunacion_estado',
+        'vacunacion_usuario',
     ];
 
     public static function getList($take,$skip,$idHistoria)

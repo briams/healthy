@@ -125,6 +125,10 @@ class ConsultaController extends Controller
         }
 
         $rsHistoria = Historia::getHistoria($request->input('consulta_historia_id'));
+
+        $user = Session::get('usuario');
+        $request->merge(['consulta_usuario' => $user->idUsuario]);
+
         if (!$request->filled('consulta_id')) {
             $request->merge(['consulta_estado' => ST_ACTIVO]);
             $request->merge(['consulta_fecha_registro' => Carbon::now() ]);

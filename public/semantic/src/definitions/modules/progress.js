@@ -392,7 +392,7 @@ $.fn.progress = function(parameters) {
             $module.removeClass(className.warning);
           },
           error: function() {
-            module.verbose('Removing error state');
+            module.verbose('Removing errors state');
             $module.removeClass(className.error);
           }
         },
@@ -586,7 +586,7 @@ $.fn.progress = function(parameters) {
           },
           error : function(text) {
             text = text || settings.text.error;
-            module.debug('Setting error state');
+            module.debug('Setting errors state');
             $module.addClass(className.error);
             module.remove.active();
             module.remove.success();

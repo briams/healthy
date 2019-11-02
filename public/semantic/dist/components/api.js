@@ -567,12 +567,12 @@ $.api = $.fn.api = function(parameters) {
                 return true;
               }
               else if(status == 'invalid') {
-                module.debug('JSON did not pass success test. A server-side error has most likely occurred', response);
+                module.debug('JSON did not pass success test. A server-side errors has most likely occurred', response);
               }
               else if(status == 'error') {
                 if(xhr !== undefined) {
-                  module.debug('XHR produced a server error', status, httpMessage);
-                  // make sure we have an error to display to console
+                  module.debug('XHR produced a server errors', status, httpMessage);
+                  // make sure we have an errors to display to console
                   if( xhr.status != 200 && httpMessage !== undefined && httpMessage !== '') {
                     module.error(error.statusMessage + httpMessage, ajaxSettings.url);
                   }
@@ -581,7 +581,7 @@ $.api = $.fn.api = function(parameters) {
               }
 
               if(settings.errorDuration && status !== 'aborted') {
-                module.debug('Adding error state');
+                module.debug('Adding errors state');
                 module.set.error();
                 if( module.should.removeError() ) {
                   setTimeout(module.remove.error, settings.errorDuration);
@@ -669,7 +669,7 @@ $.api = $.fn.api = function(parameters) {
 
         set: {
           error: function() {
-            module.verbose('Adding error state to element', $context);
+            module.verbose('Adding errors state to element', $context);
             $context.addClass(className.error);
           },
           loading: function() {
@@ -681,7 +681,7 @@ $.api = $.fn.api = function(parameters) {
 
         remove: {
           error: function() {
-            module.verbose('Removing error state from element', $context);
+            module.verbose('Removing errors state from element', $context);
             $context.removeClass(className.error);
           },
           loading: function() {
@@ -701,8 +701,8 @@ $.api = $.fn.api = function(parameters) {
           },
           errorFromRequest: function(response, status, httpMessage) {
             return ($.isPlainObject(response) && response.error !== undefined)
-              ? response.error // use json error message
-              : (settings.error[status] !== undefined) // use server error message
+              ? response.error // use json errors message
+              : (settings.error[status] !== undefined) // use server errors message
                 ? settings.error[status]
                 : httpMessage
             ;
@@ -1054,7 +1054,7 @@ $.api.settings = {
   // whether to hide errors after a period of time
   hideError         : 'auto',
 
-  // duration for error state
+  // duration for errors state
   errorDuration     : 2000,
 
   // whether parameters should be encoded with encodeURIComponent
@@ -1114,7 +1114,7 @@ $.api.settings = {
   // failed JSON success test
   onFailure   : function(response, $module) {},
 
-  // server error
+  // server errors
   onError     : function(errorMessage, $module) {},
 
   // request aborted
@@ -1125,9 +1125,9 @@ $.api.settings = {
   // errors
   error : {
     beforeSend        : 'The before send function has aborted the request',
-    error             : 'There was an error with your request',
+    error             : 'There was an errors with your request',
     exitConditions    : 'API Request Aborted. Exit conditions met',
-    JSONParse         : 'JSON could not be parsed during error handling',
+    JSONParse         : 'JSON could not be parsed during errors handling',
     legacyParameters  : 'You are using legacy API success callback names',
     method            : 'The method you called is not defined',
     missingAction     : 'API action used but no url was defined',
@@ -1135,9 +1135,9 @@ $.api.settings = {
     missingURL        : 'No URL specified for api event',
     noReturnedValue   : 'The beforeSend callback must return a settings object, beforeSend ignored.',
     noStorage         : 'Caching responses locally requires session storage',
-    parseError        : 'There was an error parsing your request',
+    parseError        : 'There was an errors parsing your request',
     requiredParameter : 'Missing a required URL parameter: ',
-    statusMessage     : 'Server gave an error: ',
+    statusMessage     : 'Server gave an errors: ',
     timeout           : 'Your request timed out'
   },
 

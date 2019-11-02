@@ -6,12 +6,15 @@ use App\Cliente;
 use App\Especie;
 use App\Historia;
 use App\Mascota;
+use App\Modulo;
+use App\Privilegio;
 use App\Raza;
 use App\Sexo;
 use App\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 
 class MascotaController extends Controller
@@ -214,6 +217,17 @@ class MascotaController extends Controller
         if ($idMascota == '')
             return redirect()->action('MascotaController@index');
 
+        $idModule = Modulo::getIdModule('mascota');
+        $modulosHijos = Modulo::getListModuleChildren($idModule);
+        $session = Session::get('usuario');
+        foreach ($modulosHijos as $row){
+            $validate = Privilegio::getPrivilegio($session->usuario_perfil_id,$row->idModule);
+            if($validate){
+                $modulos[] = $row->url;
+
+            }
+        }
+
         $mascotas = Mascota::getListAll();
         if (!$mascotas) {
             return redirect()->action('MascotaController@index');
@@ -223,6 +237,7 @@ class MascotaController extends Controller
         if(!$rsHistoria){
             return view('historia.historia', [
                 'editar' => true,
+                'modulos' => $modulos,
                 'mascotas' => $mascotas,
                 'idMascota' => $idMascota,
             ]);
@@ -259,11 +274,13 @@ class MascotaController extends Controller
             return view('historia.historia', [
                 'editar' => false,
                 'html' => $html,
+                'modulos' => $modulos,
                 'rsHistoria' => $rsHistoria,
             ]);
         }
         return view('historia.historia', [
             'editar' => true,
+            'modulos' => $modulos,
             'mascotas' => $mascotas,
             'idMascota' => $idMascota,
             'rsHistoria' => $rsHistoria,

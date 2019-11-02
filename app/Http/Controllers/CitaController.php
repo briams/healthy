@@ -26,7 +26,7 @@ class CitaController extends Controller
 
         foreach ($rows as $row) {
 
-            $row->cita_fecha = (new Carbon($row->cita_fecha))->format(UI_DATE_FORMAT);
+            $row->cita_fecha = (new Carbon($row->cita_fecha))->format(UI_DATETIME_FORMAT);
 
             $tool = '
                         <div class="mini ui button left pointing dropdown compact icon circular">
@@ -93,7 +93,7 @@ class CitaController extends Controller
         if (!$rsCita) {
             return redirect()->action('CitaController@index');
         }
-        $rsCita->cita_fecha = (new Carbon($rsCita->cita_fecha))->format(UI_DATE_FORMAT);
+        $rsCita->cita_fecha = (new Carbon($rsCita->cita_fecha))->format(UI_DATETIME_FORMAT);
         return view('cita.cita', [
             'rsCita' => $rsCita,
             'clientes' => $clientes,
@@ -119,8 +119,10 @@ class CitaController extends Controller
         }
 
         if ($request->filled('cita_fecha')) {
-            $parte = explode('/', $request->input('cita_fecha'));
-            $request->merge(['cita_fecha' => (new Carbon($parte[2] . '-' . $parte[1] . '-' . $parte[0]))->format('Y/m/d') ]);
+            $dateTime = explode(' ', $request->input('cita_fecha'));
+//            dd($dateTime);
+            $parte = explode('/', $dateTime[0]);
+            $request->merge(['cita_fecha' => (new Carbon($parte[2] . '-' . $parte[1] . '-' . $parte[0]))->format('Y/m/d') . ' '.$dateTime[1] ]);
         }
 
         if (!$request->filled('cita_id')) {
