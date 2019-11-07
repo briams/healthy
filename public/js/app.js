@@ -6,6 +6,26 @@ const STATUS_FAIL = 1;
 
 var scrollerContent = null;
 
+var activo = null;
+
+function menuDinamico(){
+    if(activo == 1){
+        $('.ui.sidebar.vertical.left.menu').width('0px');
+        // $('.ui.sidebar.vertical.left.menu').hide();
+        $('#div_dad_container').css('margin-left','0px');
+        $('#app_content_toolbar').width($(window).width());
+        $('.itemmenu').hide();
+        activo = 0;
+    }else{
+        $('.ui.sidebar.vertical.left.menu').width('190px');
+        // $('.ui.sidebar.vertical.left.menu').show();
+        $('#div_dad_container').css('margin-left','192px');
+        setTimeout(() =>{$('.itemmenu').show(); }, 280);
+        $('#app_content_toolbar').width($(window).width()-192);
+        activo = 1;
+    }
+}
+
 function dataSourceBinding(dataSourceOptions, url) {
     $.ajax({
         url: url,
@@ -29,22 +49,15 @@ function dataSourceBinding(dataSourceOptions, url) {
         });
 }
 
+
+
 function resizeScreen()
 {
-    var containerWidth = ($(window).width()-190);
-    var containerHeight = ($(window).height() - 90);
-
-    $('#app__container_body').width(containerWidth);
-
-    $('#app__container_body').height(containerHeight);
-    // $('#app__container_body').css('overflow','hidden');
-
     var gridElement = document.getElementById('grid');
-
+    menuDinamico();
     if(gridElement === null) {
 
         if (scrollerContent) scrollerContent.destroy();
-
         scrollerContent = new PerfectScrollbar('#app__container_body');
 
     }else{

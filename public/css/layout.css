@@ -8,6 +8,11 @@ html {
     /*font-family: 'Source Sans Pro', Helvetica Neue, Helvetica, Arial, sans-serif !important;*/
 }
 
+.ui.menu .item {
+    /*position: initial;*/
+    position: unset;
+}
+
 .k-grid, .k-button{
      border-radius: 6.0px;
      border-color: #A6A6A6;
@@ -93,8 +98,7 @@ a.item.transition{
 }
 
 #app__container_body{
-    margin-left: 192px;
-    /*margin-top: 50px !important;*/
+    /*height: 100vh;*/
 }
 
 

@@ -7,7 +7,7 @@
     <meta name=viewport content="width=device-width, initial-scale=1"/>
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <link rel="icon" type="image/png" href="{{ url('/img/logo.ico') }}" sizes="40x40">
+    <link rel="icon" type="image/png" href="{{ url('/img/favicon.png') }}" sizes="40x40">
 
     <link rel="stylesheet" type="text/css" href="{{ asset('semantic/dist/semantic.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('kendoui/styles/kendo.common-material.min.css') }}">
@@ -22,30 +22,38 @@
 <body style="width:100%; overflow-y: hidden;">
 <div id="contextWrap">
     <div id="app_header" class="ui menu">
-        <div class="item ui colhidden" style="width:190px;background-repeat:no-repeat;background-position: center center;padding-left: 0px;">
-            <img src={{ url('/img/logo.png') }} width="" height="" alt="" style="width: 190px; height: 120px;"/>
+        <div class="item ui colhidden" style="width:190px;background-repeat:no-repeat;background-position: center;place-content: center;">
+            <img src={{ url('/img/logo.png') }} width="" height="" alt="" style="width: 120px; height: 50px;"/>
+        </div>
+        <div class="item ui colhidden">
+            <button id="btn_menu" class="ui button medium basic white inverted icon" style=""><i class="icon sidebar"></i>
+            </button>
         </div>
         <div class="right menu colhidden">
             <a class="item labeled rightsidebar computer only" id="app_logoff">
                 <i class="sign-out white-text large icon"></i>
             </a>
         </div>
+        {{--<div class="right item ui colhidden">--}}
+            {{--<button id="app_logoff" class="ui button big white inverted icon" style=""><i class="icon  sign-out"></i>--}}
+            {{--</button>--}}
+        {{--</div>--}}
     </div>
     <!--sidebar-->
     <div class="ui sidebar vertical left menu overlay  borderless visible sidemenu inverted"
-         style="-webkit-transition-duration: 0.1s; transition-duration: 0.1s; margin-top: 50px !important;"
+         style="-webkit-transition-duration: 0.1s; transition-duration: 0.1s; top: 50px !important;transition: width .5s ease 0s;"
          data-color="grey">
         <!-- MENU -->
         <div class="ui accordion inverted">
             <div class="content">
-                <a class="item logo titleIcon" href="{{ url("/") }}"><i class="home icon"></i>Veterinaria</a>
+                <a class="item logo titleIcon" href="{{ url("/") }}" style="height: 39.28px;"><i class="home icon"></i><span class="itemmenu">Veterinaria</span></a>
             </div>
         @foreach ($modulos as $modulo)
             @if (count($modulo->hijos) > 0)
                 <!-- menu con dropdown-->
-                    <div class="title item logo ui left icon">
+                    <div class="title item logo ui left icon" style="height: 39.28px;">
                         <i class="{{$modulo->icono}} titleIcon icon"></i>
-                        <i class="dropdown icon"></i> {{$modulo->nombre}}
+                        <i class="dropdown icon itemmenu"></i> <span class="itemmenu">{{$modulo->nombre}}</span>
                     </div>
                     <div class="content">
                         @foreach ($modulo->hijos as $hijo)
@@ -64,18 +72,18 @@
             @endforeach
         </div>
     </div>
-    <div class="pusher" id="app__container_body">
-        <div style="
-    overflow-x: scroll;
-    height: 100vh;
-">
-            @yield('content')
+    <div id="div_dad_container" style="margin-left: 192px;height: 100vh;transition: margin-left .5s ease 0s;">
+        <div class="pusher" id="app__container_body">
+            <div style="overflow-x: scroll;height: 100vh;">
+                @yield('content')
+            </div>
         </div>
     </div>
 </div>
 <!-- jQuery -->
 <script src="{{ URL::asset('js/jquery.js') }}" charset="utf-8"></script>
 <script src="{{ URL::asset('js/jquery-print-area.js') }}"></script>
+{{--<script src="{{ URL::asset('js/jquery.fileDownload.js') }}"></script>--}}
 <script src="{{ URL::asset('js/jszip.min.js') }}"></script>
 <script src="{{ asset('semantic/dist/semantic.min.js') }}"></script>
 <script src="{{ asset('perfect-scrollbar/js/perfect-scrollbar.min.js') }}"></script>
@@ -88,13 +96,19 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
+
         resizeScreen();
 
         $('.ui.accordion').accordion();
+
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name = csrf-token]').attr('content')
             }
+        });
+
+        $('#btn_menu').click(function (e) {
+            menuDinamico();
         });
 
         $('#app_logoff').click(function (e) {
@@ -117,6 +131,9 @@
                 }
             });
         });
+
+
+
     });
 </script>
 @yield('scripts')

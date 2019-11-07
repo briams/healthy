@@ -2,16 +2,28 @@
 
 @section('content')
     <div class="navslide navwrap" id="app_content_toolbar">
-        <div class="ui menu icon borderless grid" data-color="inverted white">
+        <div class="ui menu icon borderless " data-color="inverted white" style="height:43px;">
             <div class="item ui colhidden">
                 <button id="new_cita" class="ui button compact"><i class="icon plus"></i>Nueva Cita
                 </button>
             </div>
-            {{--<div class="item right ui colhidden">--}}
-                {{--<div class="ui input inline">--}}
-                    {{--<input type="text" placeholder="Buscar..." id="search">--}}
-                {{--</div>--}}
-            {{--</div>--}}
+            <div class="item ui colhidden">
+                {{--<button id="down_excel" class="ui button compact"><i class="icon download"></i>Down Cita--}}
+                {{--</button>--}}
+                <a href="{{ url('cita/down-excel') }}/{{ $desde }}/{{ $hasta }}" id="down_excel1" class="ui button compact"><i class="icon download"></i> Download Excel </a>
+            </div>
+            <div class="item ui colhidden">
+                <div class="header">
+                    <div class="ui input left icon">
+                        <i class="calendar icon"></i>
+                        <input id="desde" type="text"  name="desde" autocomplete="off" value="{{ $desde }}">
+                    </div>
+                    <div class="ui input left icon">
+                        <i class="calendar icon"></i>
+                        <input id="hasta" type="text"  name="hasta" autocomplete="off" value="{{ $hasta }}">
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -23,13 +35,36 @@
 @section('scripts')
     <script type="text/javascript">
 
+        var desde = "{{ $desde }}";
+        var hasta = "{{ $hasta }}";
+
+        $('#desde').flatpickr({
+            maxDate: new Date(),
+            // locale:'es',
+            dateFormat:'d/m/Y',
+            'onChange':function(){
+                desde = $("#desde").val();
+                mainDataSource.read();
+                $('#down_excel1').attr('href', "{{ url('cita/down-excel') }}"+'/'+desde+'/'+hasta );
+            }
+        });
+
+        $('#hasta').flatpickr({
+            maxDate: new Date(),
+            // locale:'es',
+            dateFormat:'d/m/Y',
+            'onChange':function(){
+                hasta = $("#hasta").val();
+                mainDataSource.read();
+                $('#down_excel1').attr('href', "{{ url('cita/down-excel') }}"+'/'+desde+'/'+hasta );
+            }
+        });
 
         var mainDataSource = new kendo.data.DataSource({
             transport: {
                 read: function (options) {
-                    // options.data.q = function () {
-                        // return $("#search_cliente").val();
-                    // };
+                    options.data.desde = function () { return $("#desde").val(); };
+                    options.data.hasta = function () { return $("#hasta").val(); };
                     dataSourceBinding(options, "{{ url('cita/get-main-list') }}")
                 }
             },
@@ -68,8 +103,8 @@
                 },
 
                 {field: "&nbsp;", title: 'ESTADO', width: "60px", template: "#= estado #"},
-                {field: "cita_cliente_id", title: 'CLIENTE', width: '80px'},
-                {field: "cita_mascota_id", title: 'MASCOTA', width: '80px'},
+                {field: "cliente_fullname", title: 'CLIENTE', width: '80px'},
+                {field: "mascota_nombre", title: 'MASCOTA', width: '80px'},
                 {field: "cita_fecha", title: 'FECHA', width: '80px'},
                 {field: "cita_motivo", title: 'MOTIVO', width: '80px'},
 
@@ -169,15 +204,34 @@
                 window.location.href = "{{ url('cita/editar') }}";
             });
 
-            // $("#search_cliente").keyup(function(e){
-            //     e.preventDefault();
-            //     var enter = 13;
-            //     if(e.which == enter)
-            //     {
-            //         // mainDataSource.page(0);
-            //         mainDataSource.read();
-            //     }
-            // });
+            $('#down_excel').click(function(e){
+                e.preventDefault();
+                var desde = $("#desde").val();
+                var hasta = $("#hasta").val();
+
+                {{--$.fileDownload("{{ action('CitaController@downExcel') }}", {--}}
+                    {{--httpMethod: 'POST',--}}
+                    {{--data : { desde : desde, hasta : hasta },--}}
+                    {{--prepareCallback: function (url) {--}}
+                    {{--},--}}
+                    {{--failCallback:function(html,error){--}}
+                    {{--}--}}
+                {{--});--}}
+
+                $.ajax({
+                    url : "{{ action('CitaController@downExcel') }}",
+                    data : { desde : desde, hasta : hasta },
+                    type : 'POST',
+                    success : function(response){
+                        toast('success',3000,'Descarga Exitosa');
+                    },
+                    statusCode : {
+                        404 : function(){
+                            alert('Web not found');
+                        }
+                    }
+                });
+            });
         });
 
 

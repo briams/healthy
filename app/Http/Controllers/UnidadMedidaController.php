@@ -11,7 +11,7 @@ class UnidadMedidaController extends Controller
 {
     public function index()
     {
-        return view('tipservicio.main');
+        return view('unidmedida.main');
     }
 
     public function GetMainList(Request $request)

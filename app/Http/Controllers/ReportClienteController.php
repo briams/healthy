@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Producto;
-use App\Tratamiento;
+use App\ReportTest;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
-class ReporteController extends Controller
+class ReportClienteController extends Controller
 {
     public function index()
     {
         $hoy = Carbon::now();
         $first = Carbon::now();
         $first->startOfMonth();
-        return view('reporte.main',[
+
+        return view('reportcliente.main',[
             'desde'  => (new Carbon($first))->format(UI_DATE_FORMAT),
             'hasta'  => (new Carbon($hoy))->format(UI_DATE_FORMAT),
         ]);
@@ -30,19 +30,15 @@ class ReporteController extends Controller
 
         $parte = explode('/', $request->input('hasta'));
         $hasta = (new Carbon($parte[2] . '-' . $parte[1] . '-' . $parte[0]))->format('Y/m/d');
+        $rows = ReportTest::getCountClienteFecha($take, $skip, $desde, $hasta);
+        $count = count(ReportTest::CountClienteFecha($desde, $hasta));
 
-        $rows = Tratamiento::getCountProductFecha($take, $skip, $desde, $hasta);
-        $count = count(Tratamiento::CountProductFecha($desde, $hasta));
-
+//        dd($rows);
         foreach ($rows as $row) {
 
-            if($row->tratamiento_tipo == 1) {
-                $row->tratamiento_tipo = 'Tratamiento Interno';
-            }elseif ($row->tratamiento_tipo == 2){
-                $row->tratamiento_tipo = 'Receta';
-            }
+            $row->fecha = (new Carbon($row->fecha))->format('d/m/Y');
 
-            $row->tratamientod_producto_id = (Producto::getProducto($row->tratamientod_producto_id))->pro_nombre;
+
 
         }
         return response()->json(['status' => STATUS_OK, 'data' => ['data' => $rows, 'count' => $count ]]);

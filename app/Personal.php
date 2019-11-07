@@ -38,6 +38,14 @@ class Personal extends Model
             ->count();
     }
 
+    public static function getListAll()
+    {
+        return self::getClone()
+            ->whereNotNull('personal_user_id')
+            ->orderBy('personal_id', 'desc')
+            ->get();
+    }
+
     public static function getPersonal($idPersonal)
     {
         return Personal::where('personal_id', '=', $idPersonal)
@@ -47,6 +55,12 @@ class Personal extends Model
     public static function getPersonalEmail($email)
     {
         return Personal::where('personal_email', '=', $email)
+            ->first();
+    }
+
+    public static function getPersonalUser($user)
+    {
+        return Personal::where('personal_user_id', '=', $user)
             ->first();
     }
 

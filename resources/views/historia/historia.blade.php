@@ -15,6 +15,9 @@
                 </button>
             </div>
             @endif
+            <div class="item ui colhidden">
+                <h3 style="text-transform: uppercase;">{{$rsCliente->cliente_fullname}} | {{$rsMascota->mascota_nombre}}</h3>
+            </div>
         </div>
     </div>
     <div class="mainWrap navslide">
@@ -24,22 +27,22 @@
                     <a class="active item" data-tab="first">Historia</a>
                     @if (isset($rsHistoria))
                         @if (in_array('vacunacion',$modulos))
-                    <a class=" item" data-tab="second">Vacunacion</a>
+                    <a class=" item" data-tab="second" id="second">Vacunacion</a>
                         @endif
                         @if (in_array('servicio',$modulos))
-                    <a class=" item" data-tab="third">Servicios</a>
+                    <a class=" item" data-tab="third" id="third">Servicios</a>
                         @endif
                         @if (in_array('tratamiento',$modulos))
-                    <a class=" item" data-tab="fourth">Tratamiento</a>
+                    <a class=" item" data-tab="fourth" id="fourth">Tratamiento</a>
                         @endif
                         @if (in_array('internamiento',$modulos))
-                    <a class=" item" data-tab="fifth">Internamiento</a>
+                    <a class=" item" data-tab="fifth" id="fifth">Internamiento</a>
                         @endif
                         @if (in_array('intervencion',$modulos))
-                    <a class=" item" data-tab="sixth">Intervencion</a>
+                    <a class=" item" data-tab="sixth" id="sixth">Intervencion</a>
                         @endif
                         @if (in_array('consulta',$modulos))
-                    <a class=" item" data-tab="seventh">Consulta</a>
+                    <a class=" item" data-tab="seventh" id="seventh">Consulta</a>
                         @endif
                     @endif
 
@@ -120,11 +123,36 @@
                                                     >@if (isset($rsHistoria)) {{$rsHistoria->historia_oservaciones}}@endif</textarea>
                                                 </div>
                                             </div>
-                                            @else
-                                                @foreach ($html as $index => $value)
-                                                    <b>{{ $index }} </b> {{ $value }} </br>
-                                                @endforeach
-                                            @endif
+                                                @else
+                                                <div class="fields">
+                                                    <div class="sixteen wide field">
+                                                        @foreach ($html as $index => $value)
+                                                            <b>{{ $index }} </b> {{ $value }} </br>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                                    @if(count($resumen->detalle) > 0)
+                                                        <div class="fields">
+                                                            <div class="sixteen wide field">
+                                                                <b>
+                                                                    {{ $resumen->cabecera }}
+                                                                </b>
+                                                            </div>
+                                                        </div>
+                                                        @foreach ($resumen->detalle as $value)
+                                                        <div class="fields">
+                                                            <div class="two wide field">
+                                                                <strong>
+                                                                    {{ $value->fecha }}
+                                                                </strong>
+                                                            </div>
+                                                            <div class="sixteen wide field">
+                                                                {{ $value->contenido }}
+                                                            </div>
+                                                        </div>
+                                                        @endforeach
+                                                    @endif
+                                                @endif
                                         </div>
                                     </div>
                                 </div>
@@ -347,6 +375,8 @@
     <script type="text/javascript">
         $(document).ready(function () {
 
+            var newHeightGrid = ($(window).height()-250);
+
             $('.tabular.menu .item').tab();
 
             $('#button_back').click(function (e) {
@@ -437,6 +467,7 @@
                     }
                 },
                 autoBind: false,
+                height:newHeightGrid,
                 columns: [
                     {
                         field: "&nbsp;",
@@ -494,7 +525,10 @@
 
             }).data("kendoGrid");
 
-            mainDataSource.read();
+            $('#second').click(function (e) {
+                e.preventDefault();
+                mainDataSource.read();
+            });
 
             $('#new_internamiento').click(function (e) {
                 e.preventDefault();
@@ -533,6 +567,7 @@
                         display: "Listando {0}-{1} de {2} registros"
                     }
                 },
+                height:newHeightGrid,
                 autoBind: false,
                 columns: [
                     {
@@ -591,7 +626,10 @@
 
             }).data("kendoGrid");
 
-            mainDataSource2.read();
+            $('#fifth').click(function (e) {
+                e.preventDefault();
+                mainDataSource2.read();
+            });
 
             $('#new_tratamiento').click(function (e) {
                 e.preventDefault();
@@ -630,6 +668,7 @@
                         display: "Listando {0}-{1} de {2} registros"
                     }
                 },
+                height:newHeightGrid,
                 autoBind: false,
                 columns: [
                     {
@@ -687,7 +726,10 @@
 
             }).data("kendoGrid");
 
-            mainDataSource3.read();
+            $('#fourth').click(function (e) {
+                e.preventDefault();
+                mainDataSource3.read();
+            });
 
             $('#new_servicio').click(function (e) {
                 e.preventDefault();
@@ -726,6 +768,7 @@
                         display: "Listando {0}-{1} de {2} registros"
                     }
                 },
+                height:newHeightGrid,
                 autoBind: false,
                 columns: [
                     {
@@ -783,7 +826,10 @@
 
             }).data("kendoGrid");
 
-            mainDataSource4.read();
+            $('#third').click(function (e) {
+                e.preventDefault();
+                mainDataSource4.read();
+            });
 
             $('#new_intervencion').click(function (e) {
                 e.preventDefault();
@@ -822,6 +868,7 @@
                         display: "Listando {0}-{1} de {2} registros"
                     }
                 },
+                height:newHeightGrid,
                 autoBind: false,
                 columns: [
                     {
@@ -879,7 +926,10 @@
 
             }).data("kendoGrid");
 
-            mainDataSource5.read();
+            $('#sixth').click(function (e) {
+                e.preventDefault();
+                mainDataSource5.read();
+            });
 
             $('#new_consulta').click(function (e) {
                 e.preventDefault();
@@ -918,6 +968,7 @@
                         display: "Listando {0}-{1} de {2} registros"
                     }
                 },
+                height:newHeightGrid,
                 autoBind: false,
                 columns: [
                     {
@@ -974,7 +1025,10 @@
 
             }).data("kendoGrid");
 
-            mainDataSource6.read();
+            $('#seventh').click(function (e) {
+                e.preventDefault();
+                mainDataSource6.read();
+            });
 
         });
 

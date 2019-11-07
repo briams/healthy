@@ -13,7 +13,13 @@ class CitaController extends Controller
 {
     public function index()
     {
-        return view('cita.main');
+        $hoy = Carbon::now();
+        $end = Carbon::now();
+        $end->endOfMonth();
+        return view('cita.main',[
+            'desde'  => (new Carbon($hoy))->format(UI_DATE_FORMAT),
+            'hasta'  => (new Carbon($end))->format(UI_DATE_FORMAT),
+        ]);
     }
 
     public function GetMainList(Request $request)
@@ -21,8 +27,14 @@ class CitaController extends Controller
         $take = $request->input('take');
         $skip = $request->input('skip');
 
-        $countRegs = Cita::getCountCita();
-        $rows = Cita::getList($take, $skip);
+        $parte = explode('/', $request->input('desde'));
+        $desde = (new Carbon($parte[2] . '-' . $parte[1] . '-' . $parte[0]))->format('Y/m/d');
+
+        $parte = explode('/', $request->input('hasta'));
+        $hasta = (new Carbon($parte[2] . '-' . $parte[1] . '-' . $parte[0]))->format('Y/m/d');
+
+        $countRegs = Cita::getCountCita($desde, $hasta);
+        $rows = Cita::getList($take, $skip, $desde, $hasta);
 
         foreach ($rows as $row) {
 
@@ -193,5 +205,28 @@ class CitaController extends Controller
         }
 
         return response()->json(['status' => STATUS_OK, 'mascota' => $html]);
+    }
+
+    public function downExcel($diai,$mesi,$anioi,$diaf,$mesf,$aniof){
+
+//        $parte = explode('/', $request->input('desde'));
+        $desde = (new Carbon($anioi . '-' . $mesi . '-' . $diai))->format('Y/m/d');
+
+//        $parte = explode('/', $request->input('hasta'));
+        $hasta = (new Carbon($aniof . '-' . $mesf . '-' . $diaf))->format('Y/m/d');
+
+        $rows = Cita::getListAll($desde, $hasta);
+
+        foreach ($rows as $row) {
+
+            $row->cita_hora = (new Carbon($row->cita_fecha))->format(UI_TIME_FORMAT);
+            $row->cita_fecha = (new Carbon($row->cita_fecha))->format(UI_DATE_FORMAT);
+
+        }
+
+        return view('cita.excelcita',[
+            'citas'  => $rows,
+        ]);
+
     }
 }

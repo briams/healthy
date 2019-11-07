@@ -173,6 +173,7 @@ class ConsultaController extends Controller
     {
         $sintomasTemporal = Session::get('listSintomas');
         $arraySintomas = [];
+        if($sintomasTemporal != '')
         if (count($sintomasTemporal) > 0)
         {
             $sintomasTemporal = (object)$sintomasTemporal;
@@ -245,6 +246,7 @@ class ConsultaController extends Controller
     {
         $examenesTemporal = Session::get('listExamenes');
         $arrayExamenes = [];
+        if($examenesTemporal != '')
         if (count($examenesTemporal) > 0)
         {
             $examenesTemporal = (object)$examenesTemporal;

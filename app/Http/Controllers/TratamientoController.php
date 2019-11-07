@@ -162,6 +162,7 @@ class TratamientoController extends Controller
     {
         $productosTemporal = Session::get('listProductos');
         $arrayProductos = [];
+        if($productosTemporal != '')
         if (count($productosTemporal) > 0)
         {
             $productosTemporal = (object)$productosTemporal;

@@ -15,6 +15,14 @@
                     </div>
                 </div>
             </div>
+            <div class="item ui colhidden">
+                <select class="ui dropdown" id="personal" name="personal">
+                    <option value="">Seleccione Personal</option>
+                    @foreach ($rsPersonal as $personal)
+                        <option value="{{$personal->personal_user_id}}">{{ $personal->personal_nombre }} &nbsp; {{ $personal->personal_apellido }} </option>
+                    @endforeach
+                </select>
+            </div>
             <div class="item right ui colhidden">
 
             </div>
@@ -28,14 +36,14 @@
 
 @extends('layouts.stylepdf')
 
-@section('titule','Reporte de Productos')
+@section('titule','Reporte de Servicios')
 
 @section('scripts')
 
     <script type="text/javascript">
 
         $('#desde').flatpickr({
-            // maxDate: new Date(),
+            maxDate: new Date(),
             // locale:'es',
             dateFormat:'d/m/Y',
             'onChange':function(){
@@ -43,13 +51,20 @@
             }
         });
 
+        $("#personal").dropdown();
+
         $('#hasta').flatpickr({
-            // maxDate: new Date(),
+            maxDate: new Date(),
             // locale:'es',
             dateFormat:'d/m/Y',
             'onChange':function(){
                 mainDataSource.read();
             }
+        });
+
+        $("#personal").change(function(e){
+            e.preventDefault();
+            mainDataSource.read();
         });
 
         var mainDataSource = new kendo.data.DataSource({
@@ -57,7 +72,8 @@
                 read: function (options) {
                     options.data.desde = function () { return $("#desde").val(); };
                     options.data.hasta = function () { return $("#hasta").val(); };
-                    dataSourceBinding(options, "{{ url('reporte-producto/get-main-list') }}")
+                    options.data.personal = function () { return $("#personal").val(); };
+                    dataSourceBinding(options, "{{ url('reporte-service/get-main-list') }}")
                 }
             },
             serverFiltering: true,
@@ -70,7 +86,7 @@
                 total: 'count',
                 model: {
 
-                    id: "asig_id"
+                    id: "id"
                 }
             }
         });
@@ -83,14 +99,14 @@
                 { name: "pdf", text: "Pdf"}
             ],
             excel: {
-                fileName: "Products Report.xlsx",
+                fileName: "Services Report.xlsx",
                 proxyURL: "https://demos.telerik.com/kendo-ui/service/export",
                 allPages: true,
                 filterable: true
             },
             pdf: {
-                title: "Products Report",
-                fileName: "Products Report.pdf",
+                title: "Services Report",
+                fileName: "Services Report.pdf",
                 allPages: true,
                 avoidLinks: true,
                 paperSize: "A4",
@@ -110,17 +126,9 @@
             },
             autoBind: false,
             columns: [
-                // {
-                //     field: "&nbsp;",
-                //     width: 50,
-                //     template: "#= tool #",
-                //     sortable: false,
-                //     attributes: {"class": "grid__cell_tool_menu"}
-                // },
 
-                {field: "tratamientod_producto_id", title: 'PRODUCTO', width: '80px'},
-                {field: "total", title: 'TOTAL', width: '80px'},
-                {field: "tratamiento_tipo", title: 'TIPO', width: '80px'},
+                {field: "strType", title: 'SERVICIO', width: '120px'},
+                {field: "cant", title: 'TOTAL', width: '80px'},
 
             ],
 
@@ -133,24 +141,9 @@
 
 
         $(document).ready(function () {
+
             mainDataSource.read();
 
-            // $('#desde').click(function (e) {
-            //     mainDataSource.read();
-            // });
-            // $('#hasta').click(function (e) {
-            //     mainDataSource.read();
-            // });
-
-            // $("#search_cliente").keyup(function(e){
-            //     e.preventDefault();
-            //     var enter = 13;
-            //     if(e.which == enter)
-            //     {
-            //         // mainDataSource.page(0);
-            //         mainDataSource.read();
-            //     }
-            // });
         });
 
 

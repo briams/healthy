@@ -27,7 +27,10 @@ class HistoriaController extends Controller
         }
 
         if (!$request->filled('historia_id')) {
-            $request->merge(['historia_Usuario' => Session::get('usuario')['idUsuario'] ]);
+
+            $user = Session::get('usuario');
+            $request->merge(['historia_Usuario' => $user->idUsuario]);
+
             $request->merge(['historia_fecha_registro' => Carbon::now() ]);
             $historia = Historia::create($request->all());
             return response()->json(['status' => STATUS_OK, 'id' => $historia->historia_id]);

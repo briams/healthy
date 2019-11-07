@@ -44,4 +44,4 @@ define('ESTADO_CITA',[
 ]);
 
 
-define('BASE_WEB_ROOT','localhost/healthy/public/');
+define('BASE_WEB_ROOT','localhost/laravel/healthy/public/');

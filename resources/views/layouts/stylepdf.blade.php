@@ -1,3 +1,19 @@
+<!-- Load Pako ZLIB library to enable PDF compression -->
+{{--<script src="https://kendo.cdn.telerik.com/2019.3.1023/js/pako_deflate.min.js"></script>--}}
+
+<script type="x/kendo-template" id="page-template">
+    <div class="page-template">
+        <div class="header">
+            <div style="float: right">Page #: pageNum # of #: totalPages #</div>
+            @yield('titule')
+        </div>
+        <div class="watermark">Healthy Pets</div>
+        <div class="footer">
+            Page #: pageNum # of #: totalPages #
+        </div>
+    </div>
+</script>
+
 <style>
     /* Page Template for the exported PDF */
     .page-template {

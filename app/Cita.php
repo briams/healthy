@@ -19,17 +19,23 @@ class Cita extends Model
         'cita_estado',
     ];
 
-    public static function getList($take,$skip)
+    public static function getList($take, $skip, $inicio, $fin)
     {
-        return self::getClone()->orderBy('cita_fecha', 'asc')
+        return self::getClone($inicio, $fin)->orderBy('cita_fecha', 'asc')
             ->limit($take)
             ->offset($skip)
             ->get();
     }
 
-    public static function getCountCita()
+    public static function getCountCita($inicio, $fin)
     {
-        return self::getClone()->count();
+        return self::getClone($inicio, $fin)->count();
+    }
+
+    public static function getListAll($inicio, $fin)
+    {
+        return self::getClone($inicio, $fin)->orderBy('cita_fecha', 'asc')
+            ->get();
     }
 
     public static function getCita($idCita)
@@ -38,11 +44,13 @@ class Cita extends Model
             ->first();
     }
 
-    private static function getClone()
+    private static function getClone($inicio, $fin)
     {
         return Cita::leftJoin('tbl_mascota', 'tbl_cita.cita_mascota_id', '=', 'tbl_mascota.mascota_id')
             ->leftJoin('tbl_cliente', 'tbl_cita.cita_cliente_id', '=', 'tbl_cliente.cliente_id')
-            ->where('cita_estado', '!=', ST_ELIMINADO);
+            ->where('cita_estado', '!=', ST_ELIMINADO)
+            ->whereDate('cita_fecha', '>=', $inicio)
+            ->whereDate('cita_fecha', '<=', $fin);
     }
 
     /**

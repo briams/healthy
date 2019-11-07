@@ -2,21 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Producto;
-use App\Tratamiento;
+use App\Personal;
+use App\ReportTest;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
-class ReporteController extends Controller
+class ReportBestServiceController extends Controller
 {
     public function index()
     {
         $hoy = Carbon::now();
         $first = Carbon::now();
         $first->startOfMonth();
-        return view('reporte.main',[
+
+        $rsPersonal = Personal::getListAll();
+
+        return view('reportbestservice.main',[
             'desde'  => (new Carbon($first))->format(UI_DATE_FORMAT),
             'hasta'  => (new Carbon($hoy))->format(UI_DATE_FORMAT),
+            'rsPersonal'  => $rsPersonal,
         ]);
     }
 
@@ -24,27 +28,23 @@ class ReporteController extends Controller
     {
         $take = $request->input('take');
         $skip = $request->input('skip');
+        $personal = $request->input('personal');
 
         $parte = explode('/', $request->input('desde'));
         $desde = (new Carbon($parte[2] . '-' . $parte[1] . '-' . $parte[0]))->format('Y/m/d');
 
         $parte = explode('/', $request->input('hasta'));
         $hasta = (new Carbon($parte[2] . '-' . $parte[1] . '-' . $parte[0]))->format('Y/m/d');
-
-        $rows = Tratamiento::getCountProductFecha($take, $skip, $desde, $hasta);
-        $count = count(Tratamiento::CountProductFecha($desde, $hasta));
-
-        foreach ($rows as $row) {
-
-            if($row->tratamiento_tipo == 1) {
-                $row->tratamiento_tipo = 'Tratamiento Interno';
-            }elseif ($row->tratamiento_tipo == 2){
-                $row->tratamiento_tipo = 'Receta';
-            }
-
-            $row->tratamientod_producto_id = (Producto::getProducto($row->tratamientod_producto_id))->pro_nombre;
-
+        if (!$request->filled('personal')) {
+            $rows = ReportTest::getCountServiceFecha($take, $skip, $desde, $hasta);
+            $count = count(ReportTest::CountServiceFecha($desde, $hasta));
+        }else{
+            $rows = ReportTest::getCountServiceFechaPersonal($take, $skip, $desde, $hasta,$personal);
+            $count = count(ReportTest::CountServiceFechaPersonal($desde, $hasta,$personal));
         }
+
+//        foreach ($rows as $row) {
+//        }
         return response()->json(['status' => STATUS_OK, 'data' => ['data' => $rows, 'count' => $count ]]);
     }
 }

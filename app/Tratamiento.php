@@ -55,7 +55,21 @@ class Tratamiento extends Model
         return $tratamiento;
     }
 
-    public static function getCountProductFecha($inicio,$fin)
+    public static function getCountProductFecha($take, $skip, $inicio, $fin)
+    {
+        return Tratamiento::selectRaw('SUM(tratamientod_cantidad) as total, tratamiento_tipo , tratamientod_producto_id')
+            ->join('tbl_tratamiento_detalle', 'tbl_tratamiento.tratamiento_id', '=', 'tbl_tratamiento_detalle.tratamientod_tratamiento_id')
+            ->whereDate('tratamiento_fecha_registro', '>=', $inicio)
+            ->whereDate('tratamiento_fecha_registro', '<=', $fin)
+            ->where('tratamiento_estado', '=', ST_ACTIVO)
+            ->groupBy('tratamiento_tipo')
+            ->groupBy('tratamientod_producto_id')
+            ->limit($take)
+            ->offset($skip)
+            ->get();
+    }
+
+    public static function CountProductFecha($inicio, $fin)
     {
         return Tratamiento::selectRaw('SUM(tratamientod_cantidad) as total, tratamiento_tipo , tratamientod_producto_id')
             ->join('tbl_tratamiento_detalle', 'tbl_tratamiento.tratamiento_id', '=', 'tbl_tratamiento_detalle.tratamientod_tratamiento_id')
@@ -65,6 +79,5 @@ class Tratamiento extends Model
             ->groupBy('tratamiento_tipo')
             ->groupBy('tratamientod_producto_id')
             ->get();
-//            ->tosql();
     }
 }

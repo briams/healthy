@@ -233,9 +233,20 @@ Route::group(['prefix'=>'cita', 'middleware' => ['validateSession','validatePriv
     Route::post('/activar','CitaController@activar');
     Route::post('/eliminar','CitaController@eliminar');
     Route::post('/cargar-mascota','CitaController@cargarMascota');
+    Route::get('/down-excel/{diai?}/{mesi?}/{anioi?}/{diaf?}/{mesf?}/{aniof?}', 'CitaController@downExcel');
 });
 
-Route::group(['prefix'=>'reporte', 'middleware' => ['validateSession','validatePrivilegues']],function(){
+Route::group(['prefix'=>'reporte-producto', 'middleware' => ['validateSession','validatePrivilegues']],function(){
     Route::get('/', 'ReporteController@index');
     Route::post('/get-main-list', 'ReporteController@GetMainList');
+});
+
+Route::group(['prefix'=>'reporte-service', 'middleware' => ['validateSession','validatePrivilegues']],function(){
+    Route::get('/', 'ReportBestServiceController@index');
+    Route::post('/get-main-list', 'ReportBestServiceController@GetMainList');
+});
+
+Route::group(['prefix'=>'reporte-cliente', 'middleware' => ['validateSession','validatePrivilegues']],function(){
+    Route::get('/', 'ReportClienteController@index');
+    Route::post('/get-main-list', 'ReportClienteController@GetMainList');
 });

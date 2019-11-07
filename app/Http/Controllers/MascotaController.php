@@ -7,8 +7,10 @@ use App\Especie;
 use App\Historia;
 use App\Mascota;
 use App\Modulo;
+use App\Personal;
 use App\Privilegio;
 use App\Raza;
+use App\ReportTest;
 use App\Sexo;
 use App\Usuario;
 use Illuminate\Http\Request;
@@ -229,7 +231,8 @@ class MascotaController extends Controller
         }
 
         $mascotas = Mascota::getListAll();
-        if (!$mascotas) {
+        $rsMascota = Mascota::getMascota($idMascota);
+        if (!$rsMascota) {
             return redirect()->action('MascotaController@index');
         }
 
@@ -245,17 +248,14 @@ class MascotaController extends Controller
 
         $fechaReg = (new Carbon($rsHistoria->historia_fecha_registro))->format('Y/m/d');
         $hoy = (new Carbon())->format('Y/m/d');
-//        $hoy = new \DateTime();
-//        var_dump($fechaReg);
-//        dd($hoy);
 
+
+        $rsCliente = Cliente::getCliente($rsMascota->mascota_cliente_id);
         if($hoy > $fechaReg){
-            $rsMascota = Mascota::getMascota($idMascota);
-            $rsCliente = Cliente::getCliente($rsMascota->mascota_cliente_id);
             $rsEspecie = Especie::getEspecie($rsMascota->mascota_especie);
             $rsRaza = Raza::getRaza($rsMascota->mascota_raza);
             $rsSexo = Sexo::getSexo($rsMascota->mascota_sexo);
-            $rsUser = Usuario::getUSer($rsHistoria->historia_Usuario);
+            $rsUser = Personal::getPersonalUser($rsHistoria->historia_Usuario);
 
 
             $html['Mascota: '] = $rsMascota->mascota_nombre;
@@ -268,18 +268,34 @@ class MascotaController extends Controller
             $html['Sexo: '] = $rsSexo->sexo_nombre;
             $html['Alergias: '] = $rsHistoria->historia_alergias;
             $html[''] = '';
-            $html['Registrado por : '] = $rsUser->nombre.' '.$rsUser->apellido;
+            $html['Registrado por: '] = $rsUser->personal_nombre.' '.$rsUser->personal_apellido;
             $html['Fecha Reg.: '] = (new Carbon($rsHistoria->historia_fecha_registro))->format('d/m/Y');
+            $resumen = new \stdClass();
+            $resumen->cabecera = 'Resumen: ';
+            $resumenReport = ReportTest::getHistorial($rsHistoria->historia_id);
+            $detalle = [];
+            foreach ($resumenReport as $row){
+                $detalle[] = (object)[
+                                        'fecha'  =>  (new Carbon($row->fecha))->format(UI_DATE_FORMAT),
+                                        'contenido'  =>  $row->resumen,
+                                    ];
+            }
+            $resumen->detalle = $detalle;
 
             return view('historia.historia', [
                 'editar' => false,
                 'html' => $html,
+                'rsMascota' => $rsMascota,
+                'rsCliente' => $rsCliente,
+                'resumen' => $resumen,
                 'modulos' => $modulos,
                 'rsHistoria' => $rsHistoria,
             ]);
         }
         return view('historia.historia', [
             'editar' => true,
+            'rsMascota' => $rsMascota,
+            'rsCliente' => $rsCliente,
             'modulos' => $modulos,
             'mascotas' => $mascotas,
             'idMascota' => $idMascota,
