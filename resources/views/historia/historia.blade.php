@@ -18,6 +18,12 @@
             <div class="item ui colhidden">
                 <h3 style="text-transform: uppercase;">{{$rsCliente->cliente_fullname}} | {{$rsMascota->mascota_nombre}}</h3>
             </div>
+            @if (isset($visita))
+            <div class="item right ui colhidden" @if ( $visita != '' ) @if ( $visita->vsta_estado != 1 ) style="display: none;" @endif @else style="display: none;" @endif>
+                <button id="historia_asignar" class="ui button compact"><i class="icon x icon"></i> Asignar Historia
+                </button>
+            </div>
+            @endif
         </div>
     </div>
     <div class="mainWrap navslide">
@@ -57,11 +63,11 @@
                                 <div class="sixteen wide field">
                                     <div class="ui fluid card">
                                         <div class="content">
+                                            <input type="hidden" name="historia_id" id="historia_id"
+                                                   @if (isset($rsHistoria)) value="{{$rsHistoria->historia_id}}" @endif >
 
                                             @if($editar)
 
-                                            <input type="hidden" name="historia_id" id="historia_id"
-                                                   @if (isset($rsHistoria)) value="{{$rsHistoria->historia_id}}" @endif >
                                             <div class="fields">
                                                 <div class="eight wide field historia_mascota_id" >
                                                     @if (count($mascotas) > 0)
@@ -385,6 +391,30 @@
 
             $("#historia_mascota_id").dropdown({
                 fullTextSearch:true
+            });
+
+            $('#historia_asignar').click(function(e){
+                e.preventDefault();
+                var id = $("#historia_id").val();
+                $.ajax({
+                    url : "{{ action('VisitaController@confirmarAsignacion') }}",
+                    data : { id : id },
+                    type : 'POST',
+                    success : function(response){
+                        if (response.status == STATUS_FAIL) {
+                            toast('error', 1500, response.msg );
+                        }else if (response.status == STATUS_OK) {
+                            toast('success',3000,'Sin historia asignada');
+                            window.location.href = "{{ url('visita/') }}";
+                            // mainDataSource.read();
+                        }
+                    },
+                    statusCode : {
+                        404 : function(){
+                            alert('Web not found');
+                        }
+                    }
+                });
             });
 
             $('#historia_save').click(function (e) {

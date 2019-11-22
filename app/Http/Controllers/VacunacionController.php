@@ -115,6 +115,9 @@ class VacunacionController extends Controller
             $request->merge(['vacunacion_estado' => ST_ACTIVO]);
             $request->merge(['vacunacion_fecha_registro' => Carbon::now() ]);
             $vacunacion = Vacunacion::create($request->all());
+
+            HistoriaController::generarCierre($rsHistoria->historia_id);
+
             return response()->json(['status' => STATUS_OK, 'id' => $vacunacion->vacunacion_id, 'idMascota' => $rsHistoria->historia_mascota_id]);
         }
         $vacunacion = Vacunacion::updateRow($request);

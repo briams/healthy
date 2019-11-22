@@ -133,6 +133,7 @@ class TratamientoController extends Controller
             $request->merge(['tratamiento_estado' => ST_ACTIVO]);
             $request->merge(['tratamiento_fecha_registro' => Carbon::now() ]);
             $tratamiento = Tratamiento::create($request->all());
+            HistoriaController::generarCierre($rsHistoria->historia_id);
         }else{
             $tratamiento = Tratamiento::updateRow($request);
             TratamientoDetalle::deleteAllTratamientoDetalle($tratamiento->tratamiento_id);

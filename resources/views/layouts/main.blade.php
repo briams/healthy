@@ -22,12 +22,15 @@
 <body style="width:100%; overflow-y: hidden;">
 <div id="contextWrap">
     <div id="app_header" class="ui menu">
-        <div class="item ui colhidden" style="width:190px;background-repeat:no-repeat;background-position: center;place-content: center;">
-            <img src={{ url('/img/logo.png') }} width="" height="" alt="" style="width: 120px; height: 50px;"/>
-        </div>
-        <div class="item ui colhidden">
+        <div class="item ui colhidden" style="
+             padding-right: 5px;
+             padding-left: 5px;
+             ">
             <button id="btn_menu" class="ui button medium basic white inverted icon" style=""><i class="icon sidebar"></i>
             </button>
+        </div>
+        <div class="item ui colhidden" style="background-position: center;place-content: center;">
+            <img src={{ url('/img/logo.png') }} width="" height="" alt="" style="width: 120px; height: 50px;"/>
         </div>
         <div class="right menu colhidden">
             <a class="item labeled rightsidebar computer only" id="app_logoff">
@@ -77,6 +80,9 @@
             <div style="overflow-x: scroll;height: 100vh;">
                 @yield('content')
             </div>
+        </div>
+        <div id="content-model">
+
         </div>
     </div>
 </div>

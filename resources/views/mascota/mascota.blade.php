@@ -219,7 +219,6 @@
                     }
                 });
             });
-
         });
 
         function cargarRaza(accion){

@@ -40,6 +40,11 @@ class Raza extends Model
             ->get();
     }
 
+    public static function getListAll()
+    {
+        return Raza::get();
+    }
+
     private static function getClone()
     {
         return Raza::leftJoin('tbl_especie', 'tbl_raza.raza_especie_id', '=', 'tbl_especie.especie_id');

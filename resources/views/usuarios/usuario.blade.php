@@ -38,11 +38,11 @@
                                             <input type="hidden" name="idUsuario" id="idUsuario"  @if (isset($user)) value="{{$user->idUsuario}}" @endif>
                                             <input type="hidden" name="tipo" id="tipo"  @if (isset($tipo)) value="{{$tipo}}" @endif>
                                             <div class="fields">
-                                                <div class="six wide field required email">
+                                                <div class="eight wide field required email">
                                                     <label>E-mail</label>
                                                     <input type="email" name="email" id="email" placeholder="Email" @if (isset($user)) value="{{$user->email}}" @endif>
                                                 </div>
-                                                <div class="six wide field usuario_perfil_id" >
+                                                <div class="eight wide field usuario_perfil_id" >
                                                     @if (count($perfiles) > 0)
                                                     <label>Perfil</label>
                                                     <select class="ui search dropdown" id="usuario_perfil_id" name="usuario_perfil_id">
@@ -55,11 +55,11 @@
                                                 </div>
                                             </div>
                                             <div class="fields">
-                                                <div class="six wide field required password">
+                                                <div class="eight wide field required password">
                                                     <label>New Password</label>
                                                     <input type="password" name="password" id="password" placeholder="New Password" >
                                                 </div>
-                                                <div class="six wide field required password_validate">
+                                                <div class="eight wide field required password_validate">
                                                     <label>Duplicate New Password</label>
                                                     <input type="password" name="password_validate" id="password_validate" placeholder="Duplicate New Password" >
                                                 </div>

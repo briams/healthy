@@ -90,7 +90,6 @@ class ServicioController extends Controller
         $validator = Validator::make($request->all(), [
             'servicio_servtip_id' => 'required',
             'servicio_historia_id' => 'required',
-            'servicio_fecha' => 'required',
         ]);
         foreach ($validator->errors()->getMessages() as $key => $message) {
             $error[$key] = $message[0];
@@ -101,11 +100,6 @@ class ServicioController extends Controller
             return response()->json($res);
         }
 
-        if ($request->filled('servicio_fecha')) {
-            $parte = explode('/', $request->input('servicio_fecha'));
-            $request->merge(['servicio_fecha' => (new Carbon($parte[2] . '-' . $parte[1] . '-' . $parte[0]))->format('Y/m/d') ]);
-        }
-
         $rsHistoria = Historia::getHistoria($request->input('servicio_historia_id'));
 
         $user = Session::get('usuario');
@@ -113,7 +107,9 @@ class ServicioController extends Controller
 
         if (!$request->filled('servicio_id')) {
             $request->merge(['servicio_estado' => ST_ACTIVO]);
+            $request->merge(['servicio_fecha' => Carbon::now() ]);
             $servicio = Servicio::create($request->all());
+            HistoriaController::generarCierre($rsHistoria->historia_id);
             return response()->json(['status' => STATUS_OK, 'id' => $servicio->servicio_id, 'idMascota' => $rsHistoria->historia_mascota_id]);
         }
         $servicio = Servicio::updateRow($request);

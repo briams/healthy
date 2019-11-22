@@ -50,14 +50,14 @@
                                                         </select>
                                                     @endif
                                                 </div>
-                                                <div class="eight wide field intervencion_fecha required">
-                                                    <label>Fecha</label>
-                                                    <div class="ui input left icon">
-                                                        <i class="calendar icon"></i>
-                                                        <input id="intervencion_fecha" type="text" name="intervencion_fecha"
-                                                                @if (isset($rsIntervencion)) value="{{$rsIntervencion->intervencion_fecha}}" @endif>
-                                                    </div>
-                                                </div>
+                                                {{--<div class="eight wide field intervencion_fecha required">--}}
+                                                    {{--<label>Fecha</label>--}}
+                                                    {{--<div class="ui input left icon">--}}
+                                                        {{--<i class="calendar icon"></i>--}}
+                                                        {{--<input id="intervencion_fecha" type="text" name="intervencion_fecha"--}}
+                                                                {{--@if (isset($rsIntervencion)) value="{{$rsIntervencion->intervencion_fecha}}" @endif>--}}
+                                                    {{--</div>--}}
+                                                {{--</div>--}}
                                             </div>
                                             <div class="fields">
                                                 <div class="sixteen wide field intervencion_descripcion required">
@@ -86,11 +86,11 @@
                 window.location.href = "{{ url('mascota/historia') }}/"+"{{ $rsMascota->mascota_id }}";
             });
 
-            $('#intervencion_fecha').flatpickr({
-                maxDate: new Date(),
-                // locale:'es',
-                dateFormat:'d/m/Y'
-            });
+            // $('#intervencion_fecha').flatpickr({
+            //     maxDate: new Date(),
+            //     // locale:'es',
+            //     dateFormat:'d/m/Y'
+            // });
 
             $("#intervencion_interventip_id").dropdown({
                 fullTextSearch:true
@@ -104,7 +104,7 @@
                         intervencion_id: $("#intervencion_id").val(),
                         intervencion_interventip_id: $("#intervencion_interventip_id").val(),
                         intervencion_historia_id: $("#intervencion_historia_id").val(),
-                        intervencion_fecha: $("#intervencion_fecha").val(),
+                        // intervencion_fecha: $("#intervencion_fecha").val(),
                         intervencion_descripcion: $("#intervencion_descripcion").val(),
                     },
                     type: 'POST',

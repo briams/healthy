@@ -38,7 +38,7 @@
 
 <div class="ui center aligned grid">
   <div class="ui container">
-    <h1 class="ui huge header">Log-in</h1>
+    <h1 class="ui huge header"><img src={{ url('/img/logo.png') }} width="" height="" alt="" style="width: 280px; "/></h1>
     <div class="ui large form" >
       {{--{{ csrf_field() }}--}}
       <div class="field">

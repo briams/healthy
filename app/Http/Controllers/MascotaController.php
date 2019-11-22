@@ -23,7 +23,14 @@ class MascotaController extends Controller
 {
     public function index()
     {
-        return view('mascota.main');
+        $visita = Session::get('visita');
+        $especies = Especie::getAllList();
+        $sexos = Sexo::getListAll();
+        return view('mascota.main',[
+            'visita' => $visita,
+            'especies' => $especies,
+            'sexos' => $sexos,
+        ]);
     }
 
     public function GetMainList(Request $request)
@@ -31,8 +38,12 @@ class MascotaController extends Controller
         $take = $request->input('take');
         $skip = $request->input('skip');
 
-        $countRegs = Mascota::getCountMascota();
-        $rows = Mascota::getList($take, $skip);
+        $especie = intval($request->input('especie'));
+        $raza = intval($request->input('raza'));
+        $sexo = intval($request->input('sexo'));
+
+        $countRegs = Mascota::getCountMascota( $especie , $raza , $sexo );
+        $rows = Mascota::getList( $take, $skip , $especie , $raza , $sexo );
 
         foreach ($rows as $row) {
             $tool = ' 
@@ -204,7 +215,12 @@ class MascotaController extends Controller
         $idRaza = ($rsMascota) ? $rsMascota->mascota_raza : '';
 
         $html = '<option value="">Selecciona Raza</option>';
-        $Razas = Raza::getListRazaXEspecie($idEspecie);
+        if($accion == 3){
+            $Razas = Raza::getListAll();
+        }else{
+            $Razas = Raza::getListRazaXEspecie($idEspecie);
+        }
+
         if ($Razas) {
             foreach ($Razas as $var) {
                 $html .= '<option ' . (($idRaza == $var->raza_id and $accion == 2) ? 'selected' : '') . ' value="' . $var->raza_id . '">' . $var->raza_nombre . '</option>';
@@ -232,6 +248,7 @@ class MascotaController extends Controller
 
         $mascotas = Mascota::getListAll();
         $rsMascota = Mascota::getMascota($idMascota);
+        $rsCliente = Cliente::getCliente($rsMascota->mascota_cliente_id);
         if (!$rsMascota) {
             return redirect()->action('MascotaController@index');
         }
@@ -240,6 +257,8 @@ class MascotaController extends Controller
         if(!$rsHistoria){
             return view('historia.historia', [
                 'editar' => true,
+                'rsMascota' => $rsMascota,
+                'rsCliente' => $rsCliente,
                 'modulos' => $modulos,
                 'mascotas' => $mascotas,
                 'idMascota' => $idMascota,
@@ -249,8 +268,8 @@ class MascotaController extends Controller
         $fechaReg = (new Carbon($rsHistoria->historia_fecha_registro))->format('Y/m/d');
         $hoy = (new Carbon())->format('Y/m/d');
 
+        $visita = Session::get('visita');
 
-        $rsCliente = Cliente::getCliente($rsMascota->mascota_cliente_id);
         if($hoy > $fechaReg){
             $rsEspecie = Especie::getEspecie($rsMascota->mascota_especie);
             $rsRaza = Raza::getRaza($rsMascota->mascota_raza);
@@ -276,7 +295,7 @@ class MascotaController extends Controller
             $detalle = [];
             foreach ($resumenReport as $row){
                 $detalle[] = (object)[
-                                        'fecha'  =>  (new Carbon($row->fecha))->format(UI_DATE_FORMAT),
+                                        'fecha'  =>  (new Carbon($row->fecha))->format(UI_DATETIME_FORMAT_SHORT),
                                         'contenido'  =>  $row->resumen,
                                     ];
             }
@@ -290,6 +309,7 @@ class MascotaController extends Controller
                 'resumen' => $resumen,
                 'modulos' => $modulos,
                 'rsHistoria' => $rsHistoria,
+                'visita' => $visita,
             ]);
         }
         return view('historia.historia', [
@@ -300,6 +320,7 @@ class MascotaController extends Controller
             'mascotas' => $mascotas,
             'idMascota' => $idMascota,
             'rsHistoria' => $rsHistoria,
+            'visita' => $visita,
         ]);
     }
 

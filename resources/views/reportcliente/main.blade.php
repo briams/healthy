@@ -15,14 +15,11 @@
                     </div>
                 </div>
             </div>
-            {{--<div class="item ui colhidden">--}}
-                {{--<select class="ui dropdown" id="personal" name="personal">--}}
-                    {{--<option value="">Seleccione Personal</option>--}}
-                    {{--@foreach ($rsPersonal as $personal)--}}
-                        {{--<option value="{{$personal->personal_user_id}}">{{ $personal->personal_nombre }} &nbsp; {{ $personal->personal_apellido }} </option>--}}
-                    {{--@endforeach--}}
-                {{--</select>--}}
-            {{--</div>--}}
+
+            <div class="item ui colhidden">
+                <button id="ver_grafica" class="ui button compact"><i class="icon plus"></i>Grafica
+                </button>
+            </div>
             <div class="item right ui colhidden">
 
             </div>
@@ -128,7 +125,9 @@
             columns: [
 
                 {field: "fecha", title: 'FECHA', width: '120px'},
-                {field: "cant", title: 'TOTAL CLIENTE ATENDIDOS', width: '80px'},
+                {field: "clientesA", title: 'ATENCION EFICIENTEMENTE', width: '80px'},
+                {field: "clientesF", title: 'ENTREGA DE INFORMACION', width: '80px'},
+                {field: "clientesT", title: 'TOTAL CLIENTE ATENDIDOS', width: '80px'},
 
             ],
 
@@ -143,6 +142,24 @@
         $(document).ready(function () {
 
             mainDataSource.read();
+
+            $('#ver_grafica').click(function(e){
+                e.preventDefault();
+                // var id = $("#historia_id").val();
+                $.ajax({
+                    url : "{{ action('ReportClienteController@getGrafica') }}",
+                    data : {  },
+                    type : 'POST',
+                    success : function(response){
+                        $("#content-model").html(response.html);
+                    },
+                    statusCode : {
+                        404 : function(){
+                            alert('Web not found');
+                        }
+                    }
+                });
+            });
 
         });
 

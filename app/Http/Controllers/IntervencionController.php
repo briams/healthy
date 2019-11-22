@@ -90,7 +90,6 @@ class IntervencionController extends Controller
         $validator = Validator::make($request->all(), [
             'intervencion_interventip_id' => 'required',
             'intervencion_historia_id' => 'required',
-            'intervencion_fecha' => 'required',
         ]);
         foreach ($validator->errors()->getMessages() as $key => $message) {
             $error[$key] = $message[0];
@@ -101,19 +100,15 @@ class IntervencionController extends Controller
             return response()->json($res);
         }
 
-        if ($request->filled('intervencion_fecha')) {
-            $parte = explode('/', $request->input('intervencion_fecha'));
-            $request->merge(['intervencion_fecha' => (new Carbon($parte[2] . '-' . $parte[1] . '-' . $parte[0]))->format('Y/m/d') ]);
-        }
-
-        $rsHistoria = Historia::getHistoria($request->input('intervencion_historia_id'));
-
         $user = Session::get('usuario');
         $request->merge(['intervencion_usuario' => $user->idUsuario]);
 
+        $rsHistoria = Historia::getHistoria($request->input('intervencion_historia_id'));
         if (!$request->filled('intervencion_id')) {
             $request->merge(['intervencion_estado' => ST_ACTIVO]);
+            $request->merge(['intervencion_fecha' => Carbon::now() ]);
             $intervencion = Intervencion::create($request->all());
+            HistoriaController::generarCierre($rsHistoria->historia_id);
             return response()->json(['status' => STATUS_OK, 'id' => $intervencion->intervencion_id, 'idMascota' => $rsHistoria->historia_mascota_id]);
         }
         $intervencion = Intervencion::updateRow($request);

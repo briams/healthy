@@ -34,6 +34,7 @@ define('MYSQL_DATETIME_FORMAT', 'Y-m-d H:i:s');
 define('UI_TIME_FORMAT', 'H:i');
 define('UI_DATE_FORMAT', 'd/m/Y');
 define('UI_DATETIME_FORMAT', 'd/m/Y H:i');
+define('UI_DATETIME_FORMAT_SHORT', 'd/m/y H:i');
 
 define('ESTADO_CITA',[
     -1 => 'Eliminada',

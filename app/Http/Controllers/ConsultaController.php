@@ -133,6 +133,7 @@ class ConsultaController extends Controller
             $request->merge(['consulta_estado' => ST_ACTIVO]);
             $request->merge(['consulta_fecha_registro' => Carbon::now() ]);
             $consulta = Consulta::create($request->all());
+            HistoriaController::generarCierre($rsHistoria->historia_id);
         }else{
             $consulta = Consulta::updateRow($request);
             Examen::deleteAllExamen($consulta->consulta_id);

@@ -50,14 +50,14 @@
                                                         </select>
                                                     @endif
                                                 </div>
-                                                <div class="eight wide field servicio_fecha required">
-                                                    <label>Fecha</label>
-                                                    <div class="ui input left icon">
-                                                        <i class="calendar icon"></i>
-                                                        <input id="servicio_fecha" type="text" name="servicio_fecha"
-                                                                @if (isset($rsServicio)) value="{{$rsServicio->servicio_fecha}}" @endif>
-                                                    </div>
-                                                </div>
+                                                {{--<div class="eight wide field servicio_fecha required">--}}
+                                                    {{--<label>Fecha</label>--}}
+                                                    {{--<div class="ui input left icon">--}}
+                                                        {{--<i class="calendar icon"></i>--}}
+                                                        {{--<input id="servicio_fecha" type="text" name="servicio_fecha"--}}
+                                                                {{--@if (isset($rsServicio)) value="{{$rsServicio->servicio_fecha}}" @endif>--}}
+                                                    {{--</div>--}}
+                                                {{--</div>--}}
                                             </div>
                                             <div class="fields">
                                                 <div class="sixteen wide field servicio_observacion required">
@@ -86,11 +86,11 @@
                 window.location.href = "{{ url('mascota/historia') }}/"+"{{ $rsMascota->mascota_id }}";
             });
 
-            $('#servicio_fecha').flatpickr({
-                maxDate: new Date(),
-                // locale:'es',
-                dateFormat:'d/m/Y'
-            });
+            // $('#servicio_fecha').flatpickr({
+            //     maxDate: new Date(),
+            //     // locale:'es',
+            //     dateFormat:'d/m/Y'
+            // });
 
             $("#servicio_servtip_id").dropdown({
                 fullTextSearch:true
@@ -104,7 +104,7 @@
                         servicio_id: $("#servicio_id").val(),
                         servicio_servtip_id: $("#servicio_servtip_id").val(),
                         servicio_historia_id: $("#servicio_historia_id").val(),
-                        servicio_fecha: $("#servicio_fecha").val(),
+                        // servicio_fecha: $("#servicio_fecha").val(),
                         servicio_observacion: $("#servicio_observacion").val(),
                     },
                     type: 'POST',

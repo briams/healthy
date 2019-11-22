@@ -32,7 +32,6 @@ class MainController extends Controller
         $pass = $request->input('password');
 
         $rsUser = Usuario::getUSerEmail($usuario);
-
         if (!$rsUser) {
             return response()->json(['status' => STATUS_FAIL, 'error' => 1, 'msg' => 'Usuario no válido']);
         }

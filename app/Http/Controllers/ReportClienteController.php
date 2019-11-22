@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\ReportTest;
+use App\Visita;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -30,17 +31,36 @@ class ReportClienteController extends Controller
 
         $parte = explode('/', $request->input('hasta'));
         $hasta = (new Carbon($parte[2] . '-' . $parte[1] . '-' . $parte[0]))->format('Y/m/d');
-        $rows = ReportTest::getCountClienteFecha($take, $skip, $desde, $hasta);
-        $count = count(ReportTest::CountClienteFecha($desde, $hasta));
+        $fecha = $desde;
 
-//        dd($rows);
-        foreach ($rows as $row) {
+        while($hasta >= $fecha){
 
-            $row->fecha = (new Carbon($row->fecha))->format('d/m/Y');
+            $rows [] = (object)[
+                                    'fecha' => (new Carbon($fecha))->format('d/m/Y'),
+                                    'clientesA' => Visita::countDuracionAtencion($fecha),
+                                    'clientesF' => Visita::countHistoriasEncontradas($fecha),
+                                    'clientesT' => Visita::countClientesVisita($fecha),
+                                ];
 
-
-
+            $fecha = new Carbon($fecha);
+            $fecha = $fecha->addDays(1);
+            $fecha = (new Carbon($fecha))->format('Y/m/d');
         }
-        return response()->json(['status' => STATUS_OK, 'data' => ['data' => $rows, 'count' => $count ]]);
+
+        return response()->json(['status' => STATUS_OK, 'data' => ['data' => $rows, 'count' => count($rows) ]]);
+    }
+
+    public function getGrafica(Request $request){
+
+        $eficacia = 58;
+        $others = 42;
+
+        $view = view('reportcliente.grafica',[
+            'eficacia'  => $eficacia,
+            'others'  => $others,
+        ])->render();
+
+        return response()->json(['html'=>$view]);
+
     }
 }

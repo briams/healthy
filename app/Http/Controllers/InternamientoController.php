@@ -118,6 +118,7 @@ class InternamientoController extends Controller
             $request->merge(['internamiento_estado' => ST_ACTIVO]);
             $request->merge(['internamiento_fecha_registro' => Carbon::now() ]);
             $internamiento = Internamiento::create($request->all());
+            HistoriaController::generarCierre($rsHistoria->historia_id);
             return response()->json(['status' => STATUS_OK, 'id' => $internamiento->internamiento_id, 'idMascota' => $rsHistoria->historia_mascota_id]);
         }
         $internamiento = Internamiento::updateRow($request);

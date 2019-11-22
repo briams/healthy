@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Historia;
+use App\Visita;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
@@ -33,9 +34,35 @@ class HistoriaController extends Controller
 
             $request->merge(['historia_fecha_registro' => Carbon::now() ]);
             $historia = Historia::create($request->all());
+
+            $visita = Session::get('visita');
+            if($visita != ''){
+
+                $request->merge(['vsta_historia_id' => $historia->historia_id ]);
+                $request->merge(['vsta_id' => $visita->vsta_id ]);
+                Visita::updateRow($request);
+
+            }
+
             return response()->json(['status' => STATUS_OK, 'id' => $historia->historia_id]);
         }
         $historia = Historia::updateRow($request);
         return response()->json(['status' => STATUS_OK, 'id' => $historia->historia_id]);
+    }
+
+    public static function generarCierre($idHistoria){
+        $visita = Session::get('visita');
+        $hoy = (new Carbon())->format(MYSQL_DATE_FORMAT);
+        if($visita != ''){
+            $idVisita = $visita->vsta_id;
+            Visita::cerrarVisita($idVisita);
+            Session::forget('visita');
+        }else{
+            $rsVisita = Visita::getVisitaxHistoria($hoy,$idHistoria);
+            if($rsVisita){
+                $idVisita = $rsVisita->vsta_id;
+                Visita::cerrarVisita($idVisita);
+            }
+        }
     }
 }

@@ -26,18 +26,18 @@ class Mascota extends Model
         'mascota_estado',
     ];
 
-    public static function getList($take, $skip)
+    public static function getList($take, $skip , $especie , $raza , $sexo)
     {
-        return self::getClone()
+        return self::getClone( $especie , $raza , $sexo )
             ->orderBy('mascota_id', 'desc')
             ->limit($take)
             ->offset($skip)
             ->get();
     }
 
-    public static function getCountMascota()
+    public static function getCountMascota($especie , $raza , $sexo)
     {
-        return self::getClone()
+        return self::getClone( $especie , $raza , $sexo )
             ->count();
     }
 
@@ -62,13 +62,24 @@ class Mascota extends Model
             ->first();
     }
 
-    private static function getClone()
+    private static function getClone( $especie , $raza , $sexo )
     {
-        return Mascota::where('mascota_estado', '!=', ST_ELIMINADO)
+        $rsMascota = Mascota::where('mascota_estado', '!=', ST_ELIMINADO)
             ->leftJoin('tbl_cliente', 'tbl_mascota.mascota_cliente_id', '=', 'tbl_cliente.cliente_id')
             ->leftJoin('tbl_especie', 'tbl_mascota.mascota_especie', '=', 'tbl_especie.especie_id')
             ->leftJoin('tbl_raza', 'tbl_mascota.mascota_raza', '=', 'tbl_raza.raza_id')
             ->leftJoin('tbl_sexo', 'tbl_mascota.mascota_sexo', '=', 'tbl_sexo.sexo_id');
+        if($especie > 0){
+            $rsMascota->where('mascota_especie', '=', $especie);
+        }
+        if($raza > 0){
+            $rsMascota->where('mascota_raza', '=', $raza);
+        }
+        if($sexo > 0){
+            $rsMascota->where('mascota_sexo', '=', $sexo);
+        }
+
+        return $rsMascota;
     }
 
     /**

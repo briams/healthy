@@ -75,12 +75,12 @@ class ReportTest extends Model
 
     public static function getCountClienteFecha($take, $skip, $inicio, $fin)
     {
-        return ReportTest::selectRaw('count(distinct(idHistoria)) as cant , fecha ')
+        return ReportTest::selectRaw('count(distinct(idHistoria)) as cant , date(fecha) as fechaformat ')
             ->whereDate('fecha', '>=', $inicio)
             ->whereDate('fecha', '<=', $fin)
             ->where('estado', '=', ST_ACTIVO)
-            ->groupBy('fecha')
-            ->orderBy('fecha', 'asc')
+            ->groupBy('fechaformat')
+            ->orderBy('fechaformat', 'asc')
             ->limit($take)
             ->offset($skip)
             ->get();
@@ -88,11 +88,11 @@ class ReportTest extends Model
 
     public static function CountClienteFecha($inicio, $fin)
     {
-        return ReportTest::selectRaw('count(distinct(idHistoria)) as cant , fecha ')
+        return ReportTest::selectRaw('count(distinct(idHistoria)) as cant , date(fecha) as fechaformat ')
             ->whereDate('fecha', '>=', $inicio)
             ->whereDate('fecha', '<=', $fin)
             ->where('estado', '=', ST_ACTIVO)
-            ->groupBy('fecha')
+            ->groupBy('fechaformat')
             ->get();
     }
 

@@ -2,9 +2,40 @@
 
 @section('content')
     <div class="navslide navwrap" id="app_content_toolbar">
-        <div class="ui menu icon borderless grid" data-color="inverted white">
+        <div class="ui menu icon borderless" data-color="inverted white" style="height:43px;">
             <div class="item ui colhidden">
                 <button id="new_mascota" class="ui button compact"><i class="icon plus"></i>Nuevo Mascota
+                </button>
+            </div>
+            <div class="item ui colhidden">
+                @if (count($especies) > 0)
+                    <select class="ui dropdown" id="especie" name="especie">
+                        <option value="">Seleccione Especie</option>
+                        <option value="0">Todas</option>
+                        @foreach ($especies as $especie)
+                            <option value="{{$especie->especie_id}}">{{ $especie->especie_nombre }}</option>
+                        @endforeach
+                    </select>
+                @endif
+            </div>
+            <div class="item ui colhidden">
+                <select class="ui dropdown" id="raza" name="raza">
+
+                </select>
+            </div>
+            <div class="item ui colhidden">
+                @if (count($sexos) > 0)
+                    <select class="ui dropdown" id="sexo" name="sexo">
+                        <option value="">Seleccione Sexo</option>
+                        <option value="0">Todas</option>
+                        @foreach ($sexos as $sexo)
+                            <option value="{{$sexo->sexo_id}}">{{ $sexo->sexo_nombre }}</option>
+                        @endforeach
+                    </select>
+                @endif
+            </div>
+            <div class="item right ui colhidden" @if ( $visita != '' ) @if ( $visita->vsta_estado != 1 ) style="display: none;" @endif @else style="display: none;" @endif>
+                <button id="historia_asignar" class="ui button compact"><i class="icon x icon"></i> Sin Historia Registrada
                 </button>
             </div>
             {{--<div class="item right ui colhidden">--}}
@@ -23,13 +54,12 @@
 @section('scripts')
     <script type="text/javascript">
 
-
         var mainDataSource = new kendo.data.DataSource({
             transport: {
                 read: function (options) {
-                    // options.data.q = function () {
-                        // return $("#search_cliente").val();
-                    // };
+                    options.data.especie = function () { return $("#especie").val(); };
+                    options.data.raza = function () { return $("#raza").val(); };
+                    options.data.sexo = function () { return $("#sexo").val(); };
                     dataSourceBinding(options, "{{ url('mascota/get-main-list') }}")
                 }
             },
@@ -170,11 +200,55 @@
 
 
         $(document).ready(function () {
+
             mainDataSource.read();
+
+            $('#historia_asignar').click(function(e){
+                e.preventDefault();
+                $.ajax({
+                    url : "{{ action('VisitaController@confirmarAsignacion') }}",
+                    data : {  },
+                    type : 'POST',
+                    success : function(response){
+                        if (response.status == STATUS_FAIL) {
+                            toast('error', 1500, response.msg );
+                        }else if (response.status == STATUS_OK) {
+                            toast('success',3000,'Sin historia asignada');
+                            window.location.href = "{{ url('visita/') }}";
+                            // mainDataSource.read();
+                        }
+                    },
+                    statusCode : {
+                        404 : function(){
+                            alert('Web not found');
+                        }
+                    }
+                });
+            });
 
             $('#new_mascota').click(function (e) {
                 window.location.href = "{{ url('mascota/editar') }}";
             });
+
+            $("#sexo").change(function(e){
+                e.preventDefault();
+                mainDataSource.read();
+            });
+
+            $("#raza").change(function(e){
+                e.preventDefault();
+                mainDataSource.read();
+            });
+
+            $("#especie").change(function(e){
+                e.preventDefault();
+                $('#raza').dropdown('clear');
+                accion = 3;
+                cargarRaza(accion);
+                mainDataSource.read();
+            });
+
+            cargarRaza(3);
 
             // $("#search_cliente").keyup(function(e){
             //     e.preventDefault();
@@ -187,6 +261,14 @@
             // });
         });
 
+        function cargarRaza(accion){
+            var idMascota = 0;
+            var idEspecie = $('#especie').val();
+            idEspecie = ( idEspecie > 0 ) ? idEspecie : 0;
+            $.post("{{ action('MascotaController@cargarRaza') }}", { idMascota: idMascota, idEspecie: idEspecie, accion: accion } , function(data) {
+                $('#raza').html('<option value="0">Todas</option>'+data.raza);
+            });
+        }
 
     </script>
 
