@@ -152,6 +152,20 @@
                     type : 'POST',
                     success : function(response){
                         $("#content-model").html(response.html);
+
+                        $("#btn-cancelar").click(function(e){
+                            e.preventDefault();
+                            $('.modulo_dialog').modal('hide');
+                            $("#content-model").html('');
+                            $(".ui.dimmer.modals.page.transition").remove();
+                        });
+
+                        $('.modulo_dialog').bind('hidden.bs.modal', function (e) {
+                            e.preventDefault();
+                            $('.modulo_dialog').modal('hide');
+                            $("#content-model").html('');
+                            $(".ui.dimmer.modals.page.transition").remove();
+                        });
                     },
                     statusCode : {
                         404 : function(){
